@@ -1,15 +1,4 @@
-/**
-* Template Name: UpConstruction
-* Template URL: https://bootstrapmade.com/upconstruction-bootstrap-construction-website-template/
-* Updated: Aug 07 2024 with Bootstrap v5.3.3
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
 
-/*--------------------------------------------------------------
-# Font & Color Variables
-# Help: https://bootstrapmade.com/color-system/
---------------------------------------------------------------*/
 /* Fonts */
 :root {
   --default-font: "Open Sans",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -40,7 +29,7 @@
 /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
 
 .light-background {
-  --background-color: #f4f7f6;
+  --background-color: #ffffff;
   --surface-color: #ffffff;
 }
 
