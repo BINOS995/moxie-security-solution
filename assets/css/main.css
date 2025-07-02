@@ -12,7 +12,7 @@
   --default-color: #364d59; /* Default color used for the majority of the text content across the entire website */
   --heading-color: #52565e; /* Color for headings, subheadings and title throughout the website */
   --accent-color: #feb900; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
-  --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
+  --surface-color: #d6d6d6; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
   --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
 }
 
@@ -2853,5 +2853,39 @@ section,
 .tags-widget ul a span {
   padding-left: 5px;
   color: color-mix(in srgb, var(--default-color), transparent 60%);
+  font-size: 14px;
+}
+#chat-button {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: white;
+  color: #333;
+  border-radius: 50px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+#chat-button:hover {
+  background-color: #f0f0f0;
+}
+
+.chat-icon {
+  background-color: #25D366; /* WhatsApp green */
+  color: white;
+  padding: 6px;
+  border-radius: 50%;
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.chat-text {
+  font-family: Arial, sans-serif;
   font-size: 14px;
 }
