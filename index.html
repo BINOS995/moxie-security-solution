@@ -526,6 +526,40 @@
 
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
+  <!-- Add this just before the closing </body> tag in index.html -->
+
+<!-- Welcome Modal -->
+<div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius: 18px;">
+      <div class="modal-header" style="border-bottom: none;">
+        <h5 class="modal-title" id="welcomeModalLabel">
+          <img src="assets/img/favicon.png" alt="Moxie Ghana Limited" style="height: 32px; margin-right: 10px; vertical-align: middle;">
+          Welcome to Moxie Ghana Limited
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <h4 class="mb-3" style="color: var(--accent-color);">Your Trusted Partner in Technology & Construction</h4>
+        <p>
+          We deliver innovative engineering, security, and construction solutions across Ghana.<br>
+          Explore our services and projects, or contact us for a custom solution!
+        </p>
+        <a href="services.html" class="btn btn-warning mt-3" data-bs-dismiss="modal" style="border-radius: 25px; padding: 10px 30px;">View Our Services</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Show the modal on page load -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+    setTimeout(function() {
+      welcomeModal.show();
+    }, 800); // Delay for a subtle effect
+  });
+</script>
 
 </body>
 
