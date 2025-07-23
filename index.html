@@ -28,7 +28,21 @@
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
 
-  
+  <!-- Add this style block to your <head> or main CSS file -->
+  <style>
+    .about-gradient-background {
+  background: linear-gradient(135deg, #f8fafc 0%, #a6ff00 100%);
+      /* Soft blue to light gold, matches site palette */
+      /* Adjust colors as needed for your brand */
+    }
+
+    .about-gradient-background h2,
+    .about-gradient-background p {
+      color: #222;
+      /* Ensures readability */
+    }
+  </style>
+
 </head>
 
 <body class="index-page">
@@ -103,17 +117,7 @@
 
     </section><!-- /Hero Section -->
 
-    <!-- About Section -->
-    <section id="about" class="about section light-background">
-      <div class="container">
-        <div class="row justify-content-center text-center" data-aos="fade-up">
-          <div class="col-lg-8">
-            <h2>Your Trusted Partner in Technology and Construction</h2>
-            
-          </div>
-        </div>
-      </div>
-    </section><!-- /About Section -->
+    
 
     <!-- Services Section -->
     <section id="services" class="services section light-background">
@@ -353,7 +357,7 @@
     </section><!-- /Projects Section -->
 
     <!-- About Section -->
-    <section id="about" class="about section light-background">
+    <section id="about" class="about section about-gradient-background">
       <div class="container">
         <div class="row justify-content-center text-center" data-aos="fade-up">
           <div class="col-lg-8">
@@ -365,6 +369,7 @@
         </div>
       </div>
     </section><!-- /About Section -->
+
 
     <!-- FAQ Section -->
 <section id="faq" class="faq section light-background">
