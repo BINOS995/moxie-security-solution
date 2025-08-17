@@ -174,9 +174,83 @@ const message = encodeURIComponent("Hello, I need assistance");
 // Create the full WhatsApp URL
 const whatsappLink = `https://whatsapp.com/dl/`;
 
-// Assign the link to the button
-document.getElementById("chat-button").href = 'https://whatsapp.com/dl/';
+// Assign the link to the button if it exists
+const chatButton = document.getElementById("chat-button");
+if (chatButton) {
+  chatButton.href = 'https://whatsapp.com/dl/';
+}
 
   new PureCounter();
+
+  // EmailJS initialization moved to firebase-config.js
+
+  /**
+   * Contact Form Submission with EmailJS
+   */
+  const contactForm = document.getElementById('firebaseContactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const loading = this.querySelector('.loading');
+      const errorMessage = this.querySelector('.error-message');
+      const sentMessage = this.querySelector('.sent-message');
+
+      // Show loading
+      loading.style.display = 'block';
+      if (errorMessage) errorMessage.style.display = 'none';
+      if (sentMessage) sentMessage.style.display = 'none';
+
+      // Send email using EmailJS via firebase-config.js
+      sendEmailJS(formData)
+      .then(function() {
+        loading.style.display = 'none';
+        if (sentMessage) sentMessage.style.display = 'block';
+        contactForm.reset();
+      }, function(error) {
+        loading.style.display = 'none';
+        if (errorMessage) {
+          errorMessage.textContent = 'Failed to send message. Please try again: ' + error.text;
+          errorMessage.style.display = 'block';
+        }
+        console.error('EmailJS error:', error);
+      });
+    });
+  }
+
+  /**
+   * Quote Form Submission with Firebase EmailJS
+   */
+  const quoteForm = document.getElementById('firebaseQuoteForm');
+  if (quoteForm) {
+    quoteForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Show loading
+      const loading = quoteForm.querySelector('.loading');
+      const errorMessage = quoteForm.querySelector('.error-message');
+      const sentMessage = quoteForm.querySelector('.sent-message');
+      
+      loading.style.display = 'block';
+      errorMessage.style.display = 'none';
+      sentMessage.style.display = 'none';
+
+      const formData = new FormData(quoteForm);
+      
+      sendQuoteEmailJS(formData)
+        .then(function(response) {
+          console.log('SUCCESS!', response.status, response.text);
+          loading.style.display = 'none';
+          sentMessage.style.display = 'block';
+          quoteForm.reset();
+        }, function(error) {
+          console.log('FAILED...', error);
+          loading.style.display = 'none';
+          errorMessage.style.display = 'block';
+          errorMessage.textContent = 'Failed to send quote request. Please try again or contact us directly at info.moxieghana@gmail.com';
+        });
+    });
+  }
 
 })();

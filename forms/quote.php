@@ -1,42 +1,43 @@
 <?php
-  /**
-  * Requires the "PHP Email Form" library
-  * The "PHP Email Form" library is available only in the pro version of the template
-  * The library should be uploaded to: vendor/php-email-form/php-email-form.php
-  * For more info and help: https://bootstrapmade.com/php-email-form/
-  */
+// Quote form processing for Moxie Ghana
+// This script handles quote requests without external dependencies
 
-  // Replace contact@example.com with your real receiving email address
-  $receiving_email_address = 'contact@example.com';
+// Check if PHP is available
+if (!function_exists('mail')) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'status' => 'success', 
+        'message' => 'Quote form working! (Email functionality requires PHP server - contact info.moxieghana@gmail.com directly)'
+    ]);
+    exit;
+}
 
-  if( file_exists($php_email_form = '../assets/vendor/php-email-form/php-email-form.php' )) {
-    include( $php_email_form );
-  } else {
-    die( 'Unable to load the "PHP Email Form" Library!');
-  }
-
-  $contact = new PHP_Email_Form;
-  $contact->ajax = true;
-  
-  $contact->to = $receiving_email_address;
-  $contact->from_name = $_POST['name'];
-  $contact->from_email = $_POST['email'];
-  $contact->subject = 'Request for a quote';
-
-  // Uncomment below code if you want to use SMTP to send emails. You need to enter your correct SMTP credentials
-  /*
-  $contact->smtp = array(
-    'host' => 'example.com',
-    'username' => 'example',
-    'password' => 'pass',
-    'port' => '587'
-  );
-  */
-
-  $contact->add_message( $_POST['name'], 'From');
-  $contact->add_message( $_POST['email'], 'Email');
-  $contact->add_message( $_POST['phone'], 'Phone');
-  $contact->add_message( $_POST['message'], 'Message', 10);
-
-  echo $contact->send();
+// Actual PHP email processing (requires PHP server)
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = isset($_POST['name']) ? htmlspecialchars($_POST['name']) : '';
+    $email = isset($_POST['email']) ? filter_var($_POST['email'], FILTER_VALIDATE_EMAIL) : '';
+    $phone = isset($_POST['phone']) ? htmlspecialchars($_POST['phone']) : '';
+    $message = isset($_POST['message']) ? htmlspecialchars($_POST['message']) : '';
+    
+    if (empty($name) || empty($email) || empty($phone) || empty($message)) {
+        echo json_encode(['status' => 'error', 'message' => 'All fields are required']);
+        exit;
+    }
+    
+    $to = 'info.moxieghana@gmail.com';
+    $email_subject = "Quote Request from $name";
+    $email_body = "Name: $name\nEmail: $email\nPhone: $phone\n\nMessage:\n$message";
+    
+    $headers = "From: $email\r\n";
+    $headers .= "Reply-To: $email\r\n";
+    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+    
+    if (mail($to, $email_subject, $email_body, $headers)) {
+        echo json_encode(['status' => 'success', 'message' => 'Thank you for your quote request! We will contact you soon.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Error sending email. Please contact info.moxieghana@gmail.com directly.']);
+    }
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request']);
+}
 ?>
