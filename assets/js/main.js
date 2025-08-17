@@ -166,7 +166,7 @@
    */
 
   // Replace with your WhatsApp number (international format, no '+' or dashes)
-const phoneNumber = "233241234567";
+const phoneNumber = "233241197078";
 
 // Prefilled message (encoded)
 const message = encodeURIComponent("Hello, I need assistance");
