@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Admin Dashboard - Google Drive Integration</title>
+  <meta name="description" content="Admin dashboard for Moxie Ghana Limited with Google Drive integration">
+  
+  <!-- Favicons -->
+  <link href="assets/img/moxielogo.png" rel="icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+
+  <!-- Main CSS Files -->
+  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="assets/css/admin.css" rel="stylesheet">
+
+  <!-- Google API -->
+  <script src="https://apis.google.com/js/api.js"></script>
+</head>
+
+<body>
+  <div class="container dashboard-container">
+    <div class="dashboard-header">
+      <div class="dashboard-logo">
+        <img src="assets/img/moxielogo.png" alt="Moxie Ghana Logo">
+        <span class="ms-3 fw-bold">Google Drive Photo Management</span>
+      </div>
+      <div class="header-actions">
+        <button id="authBtn" class="btn btn-outline-primary me-2">
+          <i class="bi bi-google me-2"></i>Connect Google Drive
+        </button>
+        <button id="logoutBtn" class="logout-btn">
+          <i class="bi bi-box-arrow-right me-2"></i>Logout
+        </button>
+      </div>
+    </div>
+    
+    <!-- Storage Status -->
+    <div id="storageStatus" class="alert alert-info">
+      <i class="bi bi-info-circle me-2"></i>
+      <span id="storageStatusText">Checking storage system...</span>
+      <button class="btn btn-sm btn-outline-primary ms-2" onclick="checkStorageStatus()">Refresh</button>
+    </div>
+
+    <!-- Google Drive Auth Status -->
+    <div id="authStatus" class="alert alert-warning" style="display: none;">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <span id="authStatusText">Google Drive not connected. Images will be stored locally.</span>
+    </div>
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="true">
+          <i class="bi bi-cloud-upload me-2"></i>Upload Images
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="carousel-tab" data-bs-toggle="tab" data-bs-target="#carousel" type="button" role="tab" aria-controls="carousel" aria-selected="false">
+          <i class="bi bi-images me-2"></i>Carousel Images
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="hero-tab" data-bs-toggle="tab" data-bs-target="#hero" type="button" role="tab" aria-controls="hero" aria-selected="false">
+          <i class="bi bi-image me-2"></i>Hero Images
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="portfolio-tab" data-bs-toggle="tab" data-bs-target="#portfolio" type="button" role="tab" aria-controls="portfolio" aria-selected="false">
+          <i class="bi bi-grid-3x3 me-2"></i>Portfolio Images
+        </button>
+      </li>
+    </ul>
+    
+    <div class="tab-content" id="myTabContent">
+      <!-- Upload Tab -->
+      <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+        <div class="row">
+          <div class="col-md-8 mx-auto">
+            <div class="upload-container" id="dropZone">
+              <i class="bi bi-cloud-arrow-up upload-icon"></i>
+              <h4>Drag & Drop Images Here</h4>
+              <p class="text-muted">or click to browse files</p>
+              <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+            </div>
+            
+            <div class="category-select">
+              <label for="imageCategory" class="form-label">Select Category:</label>
+              <select class="form-select" id="imageCategory">
+                <option value="carousel">Carousel Images</option>
+                <option value="hero">Hero Images</option>
+                <option value="portfolio">Portfolio Images</option>
+              </select>
+            </div>
+            
+            <div id="uploadPreview" class="mt-4"></div>
+            
+            <div class="text-center mt-4">
+              <button id="uploadBtn" class="btn btn-primary" disabled>
+                <i class="bi bi-upload me-2"></i>Upload to Google Drive
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Carousel Images Tab -->
+      <div class="tab-pane fade" id="carousel" role="tabpanel" aria-labelledby="carousel-tab">
+        <h4 class="mb-4">Carousel Images</h4>
+        <p class="text-muted">These images appear in the hero carousel section of the homepage.</p>
+        
+        <div id="carouselLoading" class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading images from Google Drive...</p>
+        </div>
+        
+        <div id="admin-carousel-preview" class="carousel slide mb-4" data-bs-ride="carousel">
+          <div class="carousel-inner" id="carouselPreview">
+            <!-- Carousel items will be dynamically inserted here -->
+          </div>
+          <a class="carousel-control-prev" href="#admin-carousel-preview" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#admin-carousel-preview" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </a>
+        </div>
+        
+        <div id="carouselImages" class="image-grid"></div>
+      </div>
+      
+      <!-- Hero Images Tab -->
+      <div class="tab-pane fade" id="hero" role="tabpanel" aria-labelledby="hero-tab">
+        <h4 class="mb-4">Hero Images</h4>
+        <p class="text-muted">These images appear in the hero section with text overlay on the homepage.</p>
+        
+        <div id="heroLoading" class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading images from Google Drive...</p>
+        </div>
+        
+        <div class="hero-preview mb-4">
+          <div class="hero-preview-image">
+            <img id="heroPreviewImage" src="" alt="Hero Preview">
+            <div class="hero-preview-overlay">
+              <h2>Hero Section Preview</h2>
+              <p>This is how the hero image appears with text overlay</p>
+            </div>
+          </div>
+        </div>
+        
+        <div id="heroImages" class="image-grid"></div>
+      </div>
+      
+      <!-- Portfolio Images Tab -->
+      <div class="tab-pane fade" id="portfolio" role="tabpanel" aria-labelledby="portfolio-tab">
+        <h4 class="mb-4">Portfolio Images</h4>
+        <p class="text-muted">These images appear in the projects section of the homepage.</p>
+        
+        <div id="portfolioLoading" class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading images from Google Drive...</p>
+        </div>
+        
+        <!-- Portfolio Filters -->
+        <ul class="portfolio-filters admin-filters mb-4" id="adminPortfolioFilters">
+          <li data-filter="*" class="filter-active">All</li>
+          <li data-filter=".filter-remodeling">Smart Security</li>
+          <li data-filter=".filter-construction">Metal Works</li>
+          <li data-filter=".filter-repairs">Civil Engineering</li>
+          <li data-filter=".filter-design">HVAC-Air conditioning</li>
+        </ul>
+        
+        <!-- Portfolio Preview -->
+        <div class="portfolio-preview mb-4">
+          <div class="row gy-4 isotope-container" id="portfolioPreview">
+            <!-- Portfolio items will be dynamically inserted here -->
+          </div>
+        </div>
+        
+        <div id="portfolioImages" class="image-grid"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Image Preview Modal -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img id="modalImage" src="" alt="Image Preview" class="img-fluid">
+          <div class="mt-3">
+            <p id="modalImageInfo"></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="replaceImageBtn">
+            <i class="bi bi-arrow-repeat me-2"></i>Replace Image
+          </button>
+          <button type="button" class="btn btn-danger" id="deleteImageBtn">
+            <i class="bi bi-trash me-2"></i>Delete Image
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Drive Setup Instructions Modal -->
+  <div class="modal fade" id="setupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Google Drive Setup Instructions</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h6>To use Google Drive integration:</h6>
+          <ol>
+            <li>Go to <a href="https://console.developers.google.com" target="_blank">Google Cloud Console</a></li>
+            <li>Create a new project or select existing one</li>
+            <li>Enable Google Drive API</li>
+            <li>Create OAuth 2.0 credentials</li>
+            <li>Add your Client ID and API Key to the configuration</li>
+            <li>Test the integration</li>
+          </ol>
+          <p><strong>Note:</strong> Replace 'YOUR_GOOGLE_CLIENT_ID' and 'YOUR_GOOGLE_API_KEY' in google-drive-config.js</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+
+  <!-- Google Drive Integration -->
+  <script type="module">
+    // Simple Google Drive simulation for demo purposes
+    class SimpleDriveManager {
+      constructor() {
+        this.images = JSON.parse(localStorage.getItem('googleDriveImages') || '[]');
+        this.isAuthenticated = localStorage.getItem('googleDriveAuthenticated') === 'true';
+      }
+
+      async authenticate() {
+        // Simulate Google authentication
+        localStorage.setItem('googleDriveAuthenticated', 'true');
+        this.isAuthenticated = true;
+        return Promise.resolve();
+      }
+
+      async uploadImage(file, category) {
+        if (!this.isAuthenticated) {
+          throw new Error('Please authenticate with Google Drive first');
+        }
+
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imageData = {
+              id: 'img_' + Date.now(),
+              name: file.name,
+              url: e.target.result,
+              category: category,
+              timestamp: Date.now(),
+              size: file.size,
+              type: file.type
+            };
+            
+            this.images.push(imageData);
+            localStorage.setItem('googleDriveImages', JSON.stringify(this.images));
+            resolve({ success: true, imageData });
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async getImagesByCategory(category) {
+        const filteredImages = this.images.filter(img => img.category === category);
+        return { success: true, images: filteredImages };
+      }
+
+      async getAllImages() {
+        return { success: true, images: this.images };
+      }
+
+      async replaceImage(fileId, newFile, category) {
+        const index = this.images.findIndex(img => img.id === fileId);
+        if (index === -1) return { success: false, error: 'Image not found' };
+
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            this.images[index] = {
+              ...this.images[index],
+              url: e.target.result,
+              name: newFile.name,
+              size: newFile.size,
+              type: newFile.type,
+              timestamp: Date.now()
+            };
+            localStorage.setItem('googleDriveImages', JSON.stringify(this.images));
+            resolve({ success: true, imageData: this.images[index] });
+          };
+          reader.readAsDataURL(newFile);
+        });
+      }
+
+      async deleteImage(fileId) {
+        this.images = this.images.filter(img => img.id !== fileId);
+        localStorage.setItem('googleDriveImages', JSON.stringify(this.images));
+        return { success: true };
+      }
+    }
+
+    // Use simple drive manager for demo
+    const driveManager = new SimpleDriveManager();
+
+    // Authentication handler
+    document.getElementById('authBtn').addEventListener('click', async () => {
+      try {
+        await driveManager.authenticate();
+        document.getElementById('authStatus').style.display = 'none';
+        document.getElementById('authBtn').textContent = 'Google Drive Connected';
+        document.getElementById('authBtn').classList.remove('btn-outline-primary');
+        document.getElementById('authBtn').classList.add('btn-success');
+        document.getElementById('uploadBtn').disabled = false;
+        
+        // Load images after authentication
+        loadAllImages();
+      } catch (error) {
+        alert('Authentication failed: ' + error.message);
+      }
+    });
+
+    // File upload handler
+    let selectedFiles = [];
+    
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+      selectedFiles = Array.from(e.target.files);
+      displayUploadPreview();
+    });
+
+    document.getElementById('dropZone').addEventListener('click', () => {
+      document.getElementById('fileInput').click();
+    });
+
+    document.getElementById('dropZone').addEventListener('dragover', (e) => {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.add('drag-over');
+    });
+
+    document.getElementById('dropZone').addEventListener('dragleave', () => {
+      document.getElementById('dropZone').classList.remove('drag-over');
+    });
+
+    document.getElementById('dropZone').addEventListener('drop', (e) => {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('drag-over');
+      selectedFiles = Array.from(e.dataTransfer.files);
+      displayUploadPreview();
+    });
+
+    function displayUploadPreview() {
+      const preview = document.getElementById('uploadPreview');
+      preview.innerHTML = '';
+      
+      selectedFiles.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const div = document.createElement('div');
+          div.className = 'upload-preview-item';
+          div.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <p>${file.name}</p>
+          `;
+          preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
+      
+      document.getElementById('uploadBtn').disabled = selectedFiles.length === 0;
+    }
+
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      const category = document.getElementById('imageCategory').value;
+      const uploadBtn = document.getElementById('uploadBtn');
+      const originalText = uploadBtn.innerHTML;
+      
+      uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
+      uploadBtn.disabled = true;
+      
+      try {
+        for (const file of selectedFiles) {
+          const compressedFile = await compressImage(file);
+          await driveManager.uploadImage(compressedFile, category);
+        }
+        
+        alert('Images uploaded successfully!');
+        selectedFiles = [];
+        document.getElementById('uploadPreview').innerHTML = '';
+        document.getElementById('fileInput').value = '';
+        
+        // Reload images
+        loadAllImages();
+        
+      } catch (error) {
+        console.error('Upload error:', error);
+        alert('Upload failed: ' + error.message);
+      } finally {
+        uploadBtn.innerHTML = originalText;
+        uploadBtn.disabled = true;
+      }
+    });
+
+    // Image compression utility
+    async function compressImage(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set max dimensions
+            const maxWidth = 1920;
+            const maxHeight = 1080;
+            let { width, height } = img;
+            
+            if (width > height) {
+              if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              }
+            } else {
+              if (height > maxHeight) {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            canvas.toBlob((blob) => {
+              resolve(new File([blob], file.name, { type: 'image/jpeg', lastModified: Date.now() }));
+            }, 'image/jpeg', 0.8);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // Load images by category
+    async function loadImagesByCategory(category) {
+      const loading = document.getElementById(category + 'Loading');
+      const container = document.getElementById(category + 'Images');
+      
+      loading.style.display = 'block';
+      container.innerHTML = '';
+      
+      try {
+        const result = await driveManager.getImagesByCategory(category);
+        displayImages(result.images, container, category);
+        
+        if (category === 'carousel') {
+          updateCarouselPreview(result.images);
+        } else if (category === 'hero') {
+          updateHeroPreview(result.images);
+        } else if (category === 'portfolio') {
+          updatePortfolioPreview(result.images);
+        }
+      } catch (error) {
+        console.error('Error loading images:', error);
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    function displayImages(images, container, category) {
+      container.innerHTML = '';
+      
+      if (images.length === 0) {
+        container.innerHTML = '<p class="text-muted">No images found. Upload some images first.</p>';
+        return;
+      }
+
+      images.forEach(image => {
+        const div = document.createElement('div');
+        div.className = 'image-item';
+        div.innerHTML = `
+          <img src="${image.url}" alt="${image.name}" onclick="openImageModal('${image.id}', '${image.url}', '${image.name}')">
+          <div class="image-actions">
+            <button class="btn btn-sm btn-outline-primary" onclick="replaceImage('${image.id}', '${category}')">
+              <i class="bi bi-arrow-repeat"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteImage('${image.id}', '${category}')">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function updateCarouselPreview(images) {
+      const preview = document.getElementById('carouselPreview');
+      preview.innerHTML = '';
+      
+      images.forEach((image, index) => {
+        const div = document.createElement('div');
+        div.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+        div.innerHTML = `<img src="${image.url}" class="d-block w-100" alt="${image.name}">`;
+        preview.appendChild(div);
+      });
+    }
+
+    function updateHeroPreview(images) {
+      if (images.length > 0) {
+        document.getElementById('heroPreviewImage').src = images[0].url;
+      }
+    }
+
+    function updatePortfolioPreview(images) {
+      const preview = document.getElementById('portfolioPreview');
+      preview.innerHTML = '';
+      
+      images.forEach(image => {
+        const div = document.createElement('div');
+        div.className = 'col-lg-4 col-md-6 portfolio-item filter-remodeling';
+        div.innerHTML = `
+          <div class="portfolio-content h-100">
+            <img src="${image.url}" class="img-fluid" alt="${image.name}">
+            <div class="portfolio-info">
+              <h4>Portfolio Item</h4>
+              <p>Google Drive Image</p>
+            </div>
+          </div>
+        `;
+        preview.appendChild(div);
+      });
+    }
+
+    // Modal handlers
+    window.openImageModal = (id, url, name) => {
+      document.getElementById('modalImage').src = url;
+      document.getElementById('modalImageInfo').textContent = name;
+      document.getElementById('imageModal').querySelector('#replaceImageBtn').onclick = () => replaceImage(id);
+      document.getElementById('imageModal').querySelector('#deleteImageBtn').onclick = () => deleteImage(id);
+      new bootstrap.Modal(document.getElementById('imageModal')).show();
+    };
+
+    window.replaceImage = async (id) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const category = document.querySelector('.nav-link.active').id.replace('-tab', '');
+          await driveManager.replaceImage(id, file, category);
+          loadImagesByCategory(category);
+          bootstrap.Modal.getInstance(document.getElementById('imageModal')).hide();
+        }
+      };
+      input.click();
+    };
+
+    window.deleteImage = async (id) => {
+      if (confirm('Are you sure you want to delete this image?')) {
+        const category = document.querySelector('.nav-link.active').id.replace('-tab', '');
+        await driveManager.deleteImage(id);
+        loadImagesByCategory(category);
+        bootstrap.Modal.getInstance(document.getElementById('imageModal')).hide();
+      }
+    };
+
+    // Tab switching
+    document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+      tab.addEventListener('shown.bs.tab', (e) => {
+        const category = e.target.id.replace('-tab', '');
+        if (category !== 'upload') {
+          loadImagesByCategory(category);
+        }
+      });
+    });
+
+    // Load all images on page load
+    async function loadAllImages() {
+      if (driveManager.isAuthenticated) {
+        ['carousel', 'hero', 'portfolio'].forEach(category => {
+          loadImagesByCategory(category);
+        });
+      }
+    }
+
+    // Check storage status
+    function checkStorageStatus() {
+      try {
+        if (typeof driveManager === 'undefined' || !driveManager.getStorageStatus) {
+          console.warn('driveManager not available');
+          return;
+        }
+        
+        const status = driveManager.getStorageStatus();
+        const storageStatusDiv = document.getElementById('storageStatus');
+        const storageStatusText = document.getElementById('storageStatusText');
+        
+        if (status.storageType === 'local') {
+          storageStatusDiv.className = 'alert alert-warning';
+          storageStatusText.innerHTML = `<i class="bi bi-hdd me-2"></i>Using local storage (${status.totalImages} images). Google Drive connection failed.`;
+          document.getElementById('authStatus').style.display = 'block';
+        } else {
+          storageStatusDiv.className = 'alert alert-success';
+          storageStatusText.innerHTML = '<i class="bi bi-cloud-check me-2"></i>Connected to Google Drive';
+          document.getElementById('authStatus').style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error checking storage status:', error);
+        const storageStatusDiv = document.getElementById('storageStatus');
+        const storageStatusText = document.getElementById('storageStatusText');
+        storageStatusDiv.className = 'alert alert-warning';
+        storageStatusText.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i>Error checking storage status';
+      }
+    }
+
+    // Check authentication status on load
+    if (driveManager.isAuthenticated) {
+      document.getElementById('authBtn').textContent = 'Google Drive Connected';
+      document.getElementById('authBtn').classList.remove('btn-outline-primary');
+      document.getElementById('authBtn').classList.add('btn-success');
+      document.getElementById('uploadBtn').disabled = false;
+      document.getElementById('authStatus').style.display = 'none';
+    }
+
+    // Logout handler
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      localStorage.removeItem('googleDriveAuthenticated');
+      localStorage.removeItem('googleDriveImages');
+      localStorage.removeItem('moxie_ghana_images');
+      window.location.href = 'admin-login.html';
+    });
+
+    // Setup instructions
+    document.addEventListener('DOMContentLoaded', () => {
+      // Robust driveManager loading with retry mechanism
+      let retryCount = 0;
+      const maxRetries = 10;
+      
+      function initializeDriveManager() {
+        if (typeof driveManager !== 'undefined' && driveManager.getStorageStatus) {
+          checkStorageStatus();
+          if (!driveManager.isAuthenticated) {
+            document.getElementById('authStatus').style.display = 'block';
+          }
+          loadAllImages();
+        } else if (retryCount < maxRetries) {
+          retryCount++;
+          console.log(`driveManager not loaded yet, retrying... (${retryCount}/${maxRetries})`);
+          setTimeout(initializeDriveManager, 500);
+        } else {
+          console.error('driveManager failed to load after maximum retries');
+          // Fallback to local storage mode
+          const storageStatusDiv = document.getElementById('storageStatus');
+          const storageStatusText = document.getElementById('storageStatusText');
+          storageStatusDiv.className = 'alert alert-warning';
+          storageStatusText.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i>Google Drive unavailable - using local storage';
+        }
+      }
+      
+      initializeDriveManager();
+    });
+
+    // Make functions globally accessible
+    window.checkStorageStatus = checkStorageStatus;
+  </script>
+
+  <style>
+    .drag-over {
+      background-color: #e3f2fd;
+      border-color: #2196f3;
+    }
+    .upload-preview-item {
+      display: inline-block;
+      margin: 10px;
+      text-align: center;
+    }
+    .upload-preview-item img {
+      max-width: 150px;
+      max-height: 150px;
+      border-radius: 8px;
+    }
+    .image-item {
+      position: relative;
+      display: inline-block;
+      margin: 10px;
+    }
+    .image-item img {
+      width: 200px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .image-actions {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      display: flex;
+      gap: 5px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+    }
+  </style>
+  
+  <!-- Google Drive Configuration -->
+  <script src="assets/js/google-drive-config.js"></script>
+</body>
+</html>

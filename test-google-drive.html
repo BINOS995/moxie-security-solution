@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Google Drive Integration</title>
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .image-preview { max-width: 200px; margin: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Google Drive Integration Test</h1>
+        
+        <div class="test-section">
+            <h3>1. Authentication Test</h3>
+            <button id="testAuth" class="btn btn-primary">Test Authentication</button>
+            <div id="authResult" class="mt-2"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2. Image Upload Test</h3>
+            <input type="file" id="testFile" accept="image/*" class="form-control mb-2">
+            <select id="testCategory" class="form-select mb-2">
+                <option value="carousel">Carousel</option>
+                <option value="hero">Hero</option>
+                <option value="portfolio">Portfolio</option>
+            </select>
+            <button id="testUpload" class="btn btn-success">Test Upload</button>
+            <div id="uploadResult" class="mt-2"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3. Image List Test</h3>
+            <button id="testList" class="btn btn-info">Test List Images</button>
+            <div id="listResult" class="mt-2"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4. Clear Local Storage</h3>
+            <button id="clearStorage" class="btn btn-danger">Clear All Test Data</button>
+        </div>
+
+        <div class="test-section">
+            <h3>5. Navigation</h3>
+            <a href="admin-login.html" class="btn btn-secondary">Go to Admin Login</a>
+            <a href="admin-dashboard-drive.html" class="btn btn-secondary">Go to Admin Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Simple test implementation
+        class TestDriveManager {
+            constructor() {
+                this.images = JSON.parse(localStorage.getItem('testDriveImages') || '[]');
+                this.isAuthenticated = localStorage.getItem('testDriveAuth') === 'true';
+            }
+
+            async authenticate() {
+                localStorage.setItem('testDriveAuth', 'true');
+                this.isAuthenticated = true;
+                return { success: true, message: 'Authentication successful' };
+            }
+
+            async uploadImage(file, category) {
+                if (!this.isAuthenticated) {
+                    return { success: false, error: 'Please authenticate first' };
+                }
+
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const imageData = {
+                            id: 'test_' + Date.now(),
+                            name: file.name,
+                            url: e.target.result,
+                            category: category,
+                            size: file.size,
+                            type: file.type
+                        };
+                        
+                        this.images.push(imageData);
+                        localStorage.setItem('testDriveImages', JSON.stringify(this.images));
+                        resolve({ success: true, imageData });
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            async getImagesByCategory(category) {
+                const filtered = this.images.filter(img => img.category === category);
+                return { success: true, images: filtered };
+            }
+
+            async getAllImages() {
+                return { success: true, images: this.images };
+            }
+
+            async deleteImage(id) {
+                this.images = this.images.filter(img => img.id !== id);
+                localStorage.setItem('testDriveImages', JSON.stringify(this.images));
+                return { success: true };
+            }
+        }
+
+        const manager = new TestDriveManager();
+
+        // Test authentication
+        document.getElementById('testAuth').addEventListener('click', async () => {
+            const result = await manager.authenticate();
+            document.getElementById('authResult').innerHTML = 
+                `<div class="alert alert-${result.success ? 'success' : 'danger'}">${result.message || result.error}</div>`;
+        });
+
+        // Test upload
+        document.getElementById('testUpload').addEventListener('click', async () => {
+            const fileInput = document.getElementById('testFile');
+            const category = document.getElementById('testCategory').value;
+            
+            if (!fileInput.files[0]) {
+                document.getElementById('uploadResult').innerHTML = 
+                    '<div class="alert alert-warning">Please select a file first</div>';
+                return;
+            }
+
+            const result = await manager.uploadImage(fileInput.files[0], category);
+            document.getElementById('uploadResult').innerHTML = 
+                `<div class="alert alert-${result.success ? 'success' : 'danger'}">
+                    ${result.success ? 'Upload successful!' : result.error}
+                </div>`;
+        });
+
+        // Test list images
+        document.getElementById('testList').addEventListener('click', async () => {
+            const result = await manager.getAllImages();
+            let html = '<h4>All Images:</h4>';
+            
+            if (result.images.length === 0) {
+                html += '<p>No images found</p>';
+            } else {
+                html += `<p>Total images: ${result.images.length}</p>`;
+                result.images.forEach(img => {
+                    html += `
+                        <div class="d-flex align-items-center mb-2">
+                            <img src="${img.url}" class="image-preview">
+                            <div>
+                                <strong>${img.name}</strong><br>
+                                Category: ${img.category}<br>
+                                Size: ${Math.round(img.size / 1024)}KB
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('listResult').innerHTML = html;
+        });
+
+        // Clear storage
+        document.getElementById('clearStorage').addEventListener('click', () => {
+            localStorage.removeItem('testDriveImages');
+            localStorage.removeItem('testDriveAuth');
+            localStorage.removeItem('googleDriveImages');
+            localStorage.removeItem('googleDriveAuthenticated');
+            alert('All test data cleared!');
+            location.reload();
+        });
+
+        // Display current status
+        window.addEventListener('load', () => {
+            const authStatus = manager.isAuthenticated ? 'Authenticated' : 'Not authenticated';
+            const imageCount = manager.images.length;
+            
+            document.body.insertAdjacentHTML('afterbegin', `
+                <div class="alert alert-info">
+                    <strong>Current Status:</strong> ${authStatus} | Images: ${imageCount}
+                </div>
+            `);
+        });
+    </script>
+</body>
+</html>

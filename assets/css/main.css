@@ -23,6 +23,7 @@
   --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
   --nav-dropdown-color: #212529; /* Used for navigation links of the dropdown items in the navigation menu. */
   --nav-dropdown-hover-color:  #a6ff00; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+  --admin-link-color: #a6ff00; /* Color for the admin link in the navigation menu */
 }
 
 /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
@@ -250,6 +251,15 @@ h6 {
   .navmenu .active,
   .navmenu .active:focus {
     color: var(--nav-hover-color);
+  }
+
+  .navmenu .admin-link {
+    color: var(--admin-link-color);
+    font-weight: 600;
+  }
+
+  .navmenu .admin-link i {
+    margin-right: 4px;
   }
 
   .navmenu .dropdown ul {

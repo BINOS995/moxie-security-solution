@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Index Images - Moxie Ghana</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .image-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .image-item img {
+            max-width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .warning { background: #fff3cd; color: #856404; }
+        .error { background: #f8d7da; color: #721c24; }
+        button {
+            background: #b9e469;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #a3d155; }
+    </style>
+</head>
+<body>
+    <h1>Test Index Images - Moxie Ghana</h1>
+    
+    <div class="test-section">
+        <h2>Local Storage Status</h2>
+        <div id="storage-status" class="status">Checking...</div>
+        <button onclick="checkStorage()">Check Storage</button>
+        <button onclick="clearStorage()">Clear All Images</button>
+        <button onclick="loadSampleImages()">Load Sample Images</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Carousel Images</h2>
+        <div id="carousel-images" class="image-grid"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Hero Images</h2>
+        <div id="hero-images" class="image-grid"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Portfolio Images</h2>
+        <div id="portfolio-images" class="image-grid"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Instructions</h2>
+        <ol>
+            <li><strong>Check Storage:</strong> Click "Check Storage" to see if images are stored</li>
+            <li><strong>Load Sample:</strong> Click "Load Sample Images" to add test images</li>
+            <li><strong>View on Index:</strong> Go to <a href="index.html" target="_blank">index.html</a> to see images</li>
+            <li><strong>Upload Real Images:</strong> Use <a href="admin-dashboard-drive.html" target="_blank">Admin Dashboard</a></li>
+        </ol>
+    </div>
+
+    <script>
+        function loadImagesFromStorage() {
+            try {
+                const stored = localStorage.getItem('moxie_ghana_images');
+                return stored ? JSON.parse(stored) : [];
+            } catch (error) {
+                console.error('Error loading images:', error);
+                return [];
+            }
+        }
+
+        function checkStorage() {
+            const images = loadImagesFromStorage();
+            const status = document.getElementById('storage-status');
+            
+            if (images.length === 0) {
+                status.className = 'status warning';
+                status.textContent = 'No images found in local storage. Use admin dashboard to upload images.';
+            } else {
+                status.className = 'status success';
+                status.textContent = `Found ${images.length} images in local storage.`;
+                displayImages(images);
+            }
+        }
+
+        function displayImages(images) {
+            // Display carousel images
+            const carouselDiv = document.getElementById('carousel-images');
+            const carouselImages = images.filter(img => img.category === 'carousel');
+            carouselDiv.innerHTML = '';
+            
+            if (carouselImages.length === 0) {
+                carouselDiv.innerHTML = '<p>No carousel images</p>';
+            } else {
+                carouselImages.forEach(img => {
+                    const div = createImageDisplay(img);
+                    carouselDiv.appendChild(div);
+                });
+            }
+
+            // Display hero images
+            const heroDiv = document.getElementById('hero-images');
+            const heroImages = images.filter(img => img.category === 'hero');
+            heroDiv.innerHTML = '';
+            
+            if (heroImages.length === 0) {
+                heroDiv.innerHTML = '<p>No hero images</p>';
+            } else {
+                heroImages.forEach(img => {
+                    const div = createImageDisplay(img);
+                    heroDiv.appendChild(div);
+                });
+            }
+
+            // Display portfolio images
+            const portfolioDiv = document.getElementById('portfolio-images');
+            const portfolioImages = images.filter(img => img.category === 'portfolio');
+            portfolioDiv.innerHTML = '';
+            
+            if (portfolioImages.length === 0) {
+                portfolioDiv.innerHTML = '<p>No portfolio images</p>';
+            } else {
+                portfolioImages.forEach(img => {
+                    const div = createImageDisplay(img);
+                    portfolioDiv.appendChild(div);
+                });
+            }
+        }
+
+        function createImageDisplay(image) {
+            const div = document.createElement('div');
+            div.className = 'image-item';
+            
+            try {
+                const img = document.createElement('img');
+                img.src = image.data.startsWith('data:') ? image.data : `data:${image.type};base64,${image.data}`;
+                img.alt = image.name || 'Image';
+                
+                const name = document.createElement('div');
+                name.textContent = image.name || 'Unnamed';
+                name.style.marginTop = '5px';
+                name.style.fontSize = '12px';
+                
+                div.appendChild(img);
+                div.appendChild(name);
+            } catch (error) {
+                div.innerHTML = `<div style="color: red;">Error loading image: ${error.message}</div>`;
+            }
+            
+            return div;
+        }
+
+        function clearStorage() {
+            if (confirm('Are you sure you want to clear all images?')) {
+                localStorage.removeItem('moxie_ghana_images');
+                checkStorage();
+            }
+        }
+
+        function loadSampleImages() {
+            const sampleImages = [
+                {
+                    name: 'Sample Carousel 1',
+                    category: 'carousel',
+                    type: 'image/jpeg',
+                    data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/AB8A'
+                },
+                {
+                    name: 'Sample Hero 1',
+                    category: 'hero',
+                    type: 'image/jpeg',
+                    data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/AB8A'
+                },
+                {
+                    name: 'Sample Portfolio 1',
+                    category: 'portfolio',
+                    type: 'image/jpeg',
+                    data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/AB8A'
+                }
+            ];
+
+            localStorage.setItem('moxie_ghana_images', JSON.stringify(sampleImages));
+            checkStorage();
+        }
+
+        // Initialize on page load
+        checkStorage();
+    </script>
+</body>
+</html>

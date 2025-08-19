@@ -1,6 +1,22 @@
 // Firebase EmailJS Configuration for Moxie Ghana
 // This allows sending emails without PHP server
 
+// Import Firebase SDK
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCA6ZjkjaaldEAeUlS-4gw3QtMXPtEHrAA",
+  authDomain: "moxie-gh.firebaseapp.com",
+  projectId: "moxie-gh",
+  storageBucket: "moxie-gh.appspot.com",
+  messagingSenderId: "1041086492116",
+  appId: "1:1041086492116:web:bbeba21def33d6ac2a7a41"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
 // EmailJS Configuration (Recommended for static sites)
 const EMAILJS_CONFIG = {
     serviceID: 'service_bcc49tj',

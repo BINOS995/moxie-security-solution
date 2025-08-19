@@ -1,0 +1,363 @@
+/* Admin CSS for Moxie Ghana Photo Management System */
+
+/* General Styles */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+/* Login Page Styles */
+.login-container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-logo img {
+  max-width: 150px;
+}
+
+.login-form .form-control {
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.login-btn {
+  padding: 12px;
+  width: 100%;
+  border-radius: 5px;
+  background-color: #0ea2bd;
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #0b8a9f;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-top: 15px;
+  text-align: center;
+  display: none;
+}
+
+.success-message {
+  color: #28a745;
+  margin-top: 15px;
+  text-align: center;
+  display: none;
+}
+
+/* Dashboard Styles */
+.dashboard-container {
+  padding: 30px 0;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.dashboard-logo img {
+  max-height: 50px;
+}
+
+.nav-tabs .nav-link {
+  font-weight: 500;
+  color: #555;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 20px;
+}
+
+.nav-tabs .nav-link.active {
+  color: #0ea2bd;
+  border-bottom: 2px solid #0ea2bd;
+  background-color: transparent;
+}
+
+.tab-content {
+  padding: 30px 0;
+}
+
+/* Upload Area Styles */
+.upload-container {
+  border: 2px dashed #ddd;
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.upload-container:hover {
+  border-color: #0ea2bd;
+}
+
+.upload-icon {
+  font-size: 48px;
+  color: #0ea2bd;
+  margin-bottom: 15px;
+}
+
+.category-select {
+  max-width: 300px;
+  margin: 20px auto;
+}
+
+/* Image Grid Styles */
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.image-card {
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.image-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Carousel Preview Styles */
+#admin-carousel-preview {
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+#admin-carousel-preview .carousel-item img {
+  height: 400px;
+  object-fit: cover;
+  width: 100%;
+}
+
+/* Hero Preview Styles */
+.hero-preview {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-preview-image {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.hero-preview-image img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.hero-preview-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: white;
+}
+
+.hero-preview-overlay h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.hero-preview-overlay p {
+  font-size: 16px;
+  margin-bottom: 0;
+}
+
+.image-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.image-info {
+  padding: 10px;
+  background-color: #fff;
+}
+
+.image-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.image-actions button {
+  border: none;
+  background: none;
+  color: #555;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 5px;
+  transition: all 0.2s ease;
+}
+
+.image-actions button:hover {
+  color: #0ea2bd;
+}
+
+.image-actions .delete-btn:hover {
+  color: #dc3545;
+}
+
+/* Portfolio Preview Styles */
+.portfolio-preview {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.admin-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.admin-filters li {
+  cursor: pointer;
+  padding: 8px 15px;
+  margin: 0 5px 10px;
+  border-radius: 50px;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.admin-filters li:hover {
+  background-color: #e9ecef;
+}
+
+.admin-filters li.filter-active {
+  background-color: #0ea2bd;
+  color: white;
+}
+
+.portfolio-item {
+  margin-bottom: 20px;
+}
+
+.portfolio-content {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+
+.portfolio-content img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.portfolio-info {
+  position: absolute;
+  opacity: 0;
+  bottom: -50px;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.portfolio-content:hover .portfolio-info {
+  bottom: 0;
+  opacity: 1;
+}
+
+/* Button Styles */
+.logout-btn {
+  background-color: transparent;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #0ea2bd;
+  border-color: #0ea2bd;
+}
+
+.btn-primary:hover {
+  background-color: #0b8a9f;
+  border-color: #0b8a9f;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: none;
+  text-align: center;
+  padding: 30px;
+}
+
+/* Modal Styles */
+.modal-body img {
+  max-width: 100%;
+  max-height: 400px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .logout-btn {
+    margin-top: 15px;
+  }
+  
+  .nav-tabs {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .image-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}

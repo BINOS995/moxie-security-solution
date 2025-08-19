@@ -47,6 +47,9 @@
 
   <!-- Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
+  
+  <!-- Dynamic Image Loader -->
+  <script src="assets/js/dynamic-images.js" defer></script>
 
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -146,7 +149,21 @@
 
 <body class="index-page">
 
-  <header id="header" class="header d-flex align-items-center fixed-top">
+  <!-- Dynamic Image Status -->
+  <div id="image-status" style="position: fixed; top: 70px; right: 10px; z-index: 1000; background: rgba(0,0,0,0.8); color: white; padding: 8px 12px; border-radius: 5px; font-size: 12px; display: none;">
+    <span id="image-count">0</span> dynamic images loaded
+    <button onclick="refreshDynamicImages()" style="margin-left: 8px; background: #b9e469; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">Refresh</button>
+  </div>
+
+  <!-- Debug Controls -->
+  <div style="position: fixed; top: 10px; right: 10px; z-index: 1001; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 5px; font-size: 12px;">
+    <div style="margin-bottom: 5px; font-weight: bold;">Debug Tools:</div>
+    <button onclick="loadSampleImages()" style="background: #b9e469; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin: 2px; display: block; width: 100%;">Load Sample Images</button>
+    <button onclick="debugStorage()" style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin: 2px; display: block; width: 100%;">Debug Storage</button>
+    <button onclick="initDynamicImages()" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin: 2px; display: block; width: 100%;">Refresh Images</button>
+  </div>
+
+  <header id="header" class="header d-flex align-items-center fixed-top;">
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
       <a href="index.html" class="logo d-flex align-items-center">
@@ -162,6 +179,7 @@
           <li><a href="#services">Services</a></li> <!-- Updated this line -->
           <li><a href="#projects">Projects</a></li>
           <li><a href="contact.html">Contact</a></li>
+          <li><a href="admin-login.html" class="admin-link"><i class="bi bi-lock"></i> Admin</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>

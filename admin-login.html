@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Admin Login - Moxie Ghana Limited</title>
+  <meta name="description" content="Admin login for Moxie Ghana Limited photo management system">
+  
+  <!-- Favicons -->
+  <link href="assets/img/moxielogo.png" rel="icon">
+  <link href="assets/img/moxielogo.png" rel="icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+
+  <!-- Main CSS Files -->
+  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="assets/css/admin.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container">
+    <div class="login-container">
+      <div class="login-logo">
+        <img src="assets/img/moxielogo.png" alt="Moxie Ghana Logo">
+        <h4 class="mt-3">Admin Login</h4>
+        <p class="text-muted">Photo Management System</p>
+      </div>
+      
+      <form class="login-form" id="loginForm">
+        <div class="mb-3">
+          <input type="email" class="form-control" id="email" placeholder="Email" required>
+        </div>
+        <div class="mb-3">
+          <input type="password" class="form-control" id="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="login-btn" id="loginBtn">Login</button>
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Authentication Script -->
+  <script>
+    // Check if user is already logged in
+    if (localStorage.getItem('moxieAdminLoggedIn') === 'true') {
+      // User is signed in, redirect to admin dashboard
+      window.location.href = 'admin-dashboard-drive.html';
+   }
+    
+    // Login form submission
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('errorMessage');
+      const successMessage = document.getElementById('successMessage');
+      const loginBtn = document.getElementById('loginBtn');
+      
+      // Reset messages
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+      
+      // Disable login button and show loading state
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Logging in...';
+      
+      // Hardcoded credentials check
+      if (email === 'info.moxieghana@gmail.com' && password === 'moxiegh@2010') {
+        // Show success message
+        successMessage.textContent = 'Login successful! Redirecting...';
+        successMessage.style.display = 'block';
+        
+        // Set login state in localStorage
+        localStorage.setItem('moxieAdminLoggedIn', 'true');
+        
+        // Redirect to admin dashboard
+        setTimeout(() => {
+          window.location.href = 'admin-dashboard-drive.html';
+        }, 1500);
+      } else {
+        // Show error message
+        errorMessage.textContent = 'Invalid email or password';
+        errorMessage.style.display = 'block';
+        
+        // Reset login button
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Login';
+      }
+    });
+  </script>
+</body>
+
+</html>

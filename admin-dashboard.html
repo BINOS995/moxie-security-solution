@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Admin Dashboard - Moxie Ghana Limited</title>
+  <meta name="description" content="Admin dashboard for Moxie Ghana Limited photo management system">
+  
+  <!-- Favicons -->
+  <link href="assets/img/moxielogo.png" rel="icon">
+  <link href="assets/img/moxielogo.png" rel="icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+
+  <!-- Main CSS Files -->
+  <link href="assets/css/main.css" rel="stylesheet">
+  <link href="assets/css/admin.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="container dashboard-container">
+    <div class="dashboard-header">
+      <div class="dashboard-logo">
+        <img src="assets/img/moxielogo.png" alt="Moxie Ghana Logo">
+        <span class="ms-3 fw-bold">Photo Management System</span>
+      </div>
+      <button id="logoutBtn" class="logout-btn">
+        <i class="bi bi-box-arrow-right me-2"></i>Logout
+      </button>
+    </div>
+    
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="true">
+          <i class="bi bi-cloud-upload me-2"></i>Upload Images
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="carousel-tab" data-bs-toggle="tab" data-bs-target="#carousel" type="button" role="tab" aria-controls="carousel" aria-selected="false">
+          <i class="bi bi-images me-2"></i>Carousel Images
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="hero-tab" data-bs-toggle="tab" data-bs-target="#hero" type="button" role="tab" aria-controls="hero" aria-selected="false">
+          <i class="bi bi-image me-2"></i>Hero Images
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="portfolio-tab" data-bs-toggle="tab" data-bs-target="#portfolio" type="button" role="tab" aria-controls="portfolio" aria-selected="false">
+          <i class="bi bi-grid-3x3 me-2"></i>Portfolio Images
+        </button>
+      </li>
+    </ul>
+    
+    <div class="tab-content" id="myTabContent">
+      <!-- Upload Tab -->
+      <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+        <div class="row">
+          <div class="col-md-8 mx-auto">
+            <div class="upload-container" id="dropZone">
+              <i class="bi bi-cloud-arrow-up upload-icon"></i>
+              <h4>Drag & Drop Images Here</h4>
+              <p class="text-muted">or click to browse files</p>
+              <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+            </div>
+            
+            <div class="category-select">
+              <label for="imageCategory" class="form-label">Select Category:</label>
+              <select class="form-select" id="imageCategory">
+                <option value="carousel">Carousel Images</option>
+                <option value="hero">Hero Images</option>
+                <option value="portfolio">Portfolio Images</option>
+              </select>
+            </div>
+            
+            <div id="uploadPreview" class="mt-4"></div>
+            
+            <div class="text-center mt-4">
+              <button id="uploadBtn" class="btn btn-primary" disabled>
+                <i class="bi bi-upload me-2"></i>Upload Images
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Carousel Images Tab -->
+      <div class="tab-pane fade" id="carousel" role="tabpanel" aria-labelledby="carousel-tab">
+        <h4 class="mb-4">Carousel Images</h4>
+        <p class="text-muted">These images appear in the hero carousel section of the homepage.</p>
+        
+        <div id="carouselLoading" class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading images...</p>
+        </div>
+        
+        <div id="admin-carousel-preview" class="carousel slide mb-4" data-bs-ride="carousel">
+          <div class="carousel-inner" id="carouselPreview">
+            <!-- Carousel items will be dynamically inserted here -->
+          </div>
+          <a class="carousel-control-prev" href="#admin-carousel-preview" role="button" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#admin-carousel-preview" role="button" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </a>
+        </div>
+        
+        <div id="carouselImages" class="image-grid"></div>
+      </div>
+      
+      <!-- Hero Images Tab -->
+      <div class="tab-pane fade" id="hero" role="tabpanel" aria-labelledby="hero-tab">
+        <h4 class="mb-4">Hero Images</h4>
+        <p class="text-muted">These images appear in the hero section with text overlay on the homepage.</p>
+        
+        <div id="heroLoading" class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading images...</p>
+        </div>
+        
+        <div class="hero-preview mb-4">
+          <div class="hero-preview-image">
+            <img id="heroPreviewImage" src="" alt="Hero Preview">
+            <div class="hero-preview-overlay">
+              <h2>Hero Section Preview</h2>
+              <p>This is how the hero image appears with text overlay</p>
+            </div>
+          </div>
+        </div>
+        
+        <div id="heroImages" class="image-grid"></div>
+      </div>
+      
+      <!-- Portfolio Images Tab -->
+      <div class="tab-pane fade" id="portfolio" role="tabpanel" aria-labelledby="portfolio-tab">
+        <h4 class="mb-4">Portfolio Images</h4>
+        <p class="text-muted">These images appear in the projects section of the homepage.</p>
+        
+        <div id="portfolioLoading" class="loading-spinner">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading images...</p>
+        </div>
+        
+        <!-- Portfolio Filters -->
+        <ul class="portfolio-filters admin-filters mb-4" id="adminPortfolioFilters">
+          <li data-filter="*" class="filter-active">All</li>
+          <li data-filter=".filter-remodeling">Smart Security</li>
+          <li data-filter=".filter-construction">Metal Works</li>
+          <li data-filter=".filter-repairs">Civil Engineering</li>
+          <li data-filter=".filter-design">HVAC-Air conditioning</li>
+        </ul>
+        
+        <!-- Portfolio Preview -->
+        <div class="portfolio-preview mb-4">
+          <div class="row gy-4 isotope-container" id="portfolioPreview">
+            <!-- Portfolio items will be dynamically inserted here -->
+          </div>
+        </div>
+        
+        <div id="portfolioImages" class="image-grid"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Image Preview Modal -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <img id="modalImage" src="" alt="Image Preview">
+          <div class="mt-3">
+            <p id="modalImageInfo"></p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="replaceImageBtn">
+            <i class="bi bi-arrow-repeat me-2"></i>Replace Image
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Replace Image Modal -->
+  <div class="modal fade" id="replaceModal" tabindex="-1" aria-labelledby="replaceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="replaceModalLabel">Replace Image</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="replaceFileInput" class="form-label">Select New Image</label>
+            <input class="form-control" type="file" id="replaceFileInput" accept="image/*">
+          </div>
+          <div id="replacePreview" class="mt-3 text-center"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmReplaceBtn" disabled>
+            <i class="bi bi-check-circle me-2"></i>Confirm Replace
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this image? This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+            <i class="bi bi-trash me-2"></i>Delete Image
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+  
+  <!-- Admin Dashboard Scripts -->
+  <script type="module">
+    import { uploadImage, getImagesByCategory, replaceImage, deleteImage } from './assets/js/firebase-config.js';
+    
+    // DOM Elements
+    const logoutBtn = document.getElementById('logoutBtn');
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const uploadPreview = document.getElementById('uploadPreview');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const imageCategory = document.getElementById('imageCategory');
+    
+    // Tab content elements
+    const carouselImages = document.getElementById('carouselImages');
+    const heroImages = document.getElementById('heroImages');
+    const portfolioImages = document.getElementById('portfolioImages');
+    
+    // Loading spinners
+    const carouselLoading = document.getElementById('carouselLoading');
+    const heroLoading = document.getElementById('heroLoading');
+    const portfolioLoading = document.getElementById('portfolioLoading');
+    
+    // Modal elements
+    const imageModal = new bootstrap.Modal(document.getElementById('imageModal'));
+    const replaceModal = new bootstrap.Modal(document.getElementById('replaceModal'));
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    const modalImage = document.getElementById('modalImage');
+    const modalImageInfo = document.getElementById('modalImageInfo');
+    const replaceImageBtn = document.getElementById('replaceImageBtn');
+    const replaceFileInput = document.getElementById('replaceFileInput');
+    const replacePreview = document.getElementById('replacePreview');
+    const confirmReplaceBtn = document.getElementById('confirmReplaceBtn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    
+    // Current image data for replace/delete operations
+    let currentImageData = null;
+    let selectedFiles = [];
+    
+    // Check authentication state
+    if (localStorage.getItem('moxieAdminLoggedIn') !== 'true') {
+      // User is not signed in, redirect to login page
+      window.location.href = 'admin-login.html';
+    }
+    
+    // Logout functionality
+    logoutBtn.addEventListener('click', () => {
+      // Clear login state
+      localStorage.removeItem('moxieAdminLoggedIn');
+      // Redirect to login page
+      window.location.href = 'admin-login.html';
+    });
+    
+    // File input change handler
+    fileInput.addEventListener('change', handleFileSelect);
+    
+    // Drag and drop handlers
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#0ea2bd';
+      dropZone.style.backgroundColor = 'rgba(14, 162, 189, 0.05)';
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.style.borderColor = '#ddd';
+      dropZone.style.backgroundColor = 'transparent';
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.style.borderColor = '#ddd';
+      dropZone.style.backgroundColor = 'transparent';
+      
+      if (e.dataTransfer.files.length > 0) {
+        handleFiles(e.dataTransfer.files);
+      }
+    });
+    
+    // Upload button click handler
+    uploadBtn.addEventListener('click', async () => {
+      if (selectedFiles.length === 0) return;
+      
+      const category = imageCategory.value;
+      uploadBtn.disabled = true;
+      uploadBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Uploading...';
+      
+      try {
+        for (const file of selectedFiles) {
+          await uploadImage(file, category);
+        }
+        
+        // Clear preview and reset
+        uploadPreview.innerHTML = '';
+        selectedFiles = [];
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="bi bi-upload me-2"></i>Upload Images';
+        
+        // Refresh the images in the current category tab
+        loadCategoryImages(category);
+        
+        // Show success message
+        alert('Images uploaded successfully!');
+      } catch (error) {
+        console.error('Upload error:', error);
+        alert('Failed to upload images. Please try again.');
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<i class="bi bi-upload me-2"></i>Upload Images';
+      }
+    });
+    
+    // Tab change event listeners
+    document.getElementById('carousel-tab').addEventListener('click', () => loadCategoryImages('carousel'));
+    document.getElementById('hero-tab').addEventListener('click', () => loadCategoryImages('hero'));
+    document.getElementById('portfolio-tab').addEventListener('click', () => loadCategoryImages('portfolio'));
+    
+    // Replace image button click handler
+    replaceImageBtn.addEventListener('click', () => {
+      replaceModal.show();
+      imageModal.hide();
+    });
+    
+    // Replace file input change handler
+    replaceFileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+          replacePreview.innerHTML = `
+            <img src="${e.target.result}" alt="New Image" style="max-width: 100%; max-height: 200px;">
+          `;
+          confirmReplaceBtn.disabled = false;
+        };
+        
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    // Confirm replace button click handler
+    confirmReplaceBtn.addEventListener('click', async () => {
+      if (!currentImageData || !replaceFileInput.files[0]) return;
+      
+      confirmReplaceBtn.disabled = true;
+      confirmReplaceBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Replacing...';
+      
+      try {
+        await replaceImage(
+          currentImageData.id,
+          currentImageData.path,
+          replaceFileInput.files[0],
+          currentImageData.category
+        );
+        
+        // Close modal and refresh images
+        replaceModal.hide();
+        loadCategoryImages(currentImageData.category);
+        
+        // Reset replace form
+        replaceFileInput.value = '';
+        replacePreview.innerHTML = '';
+        confirmReplaceBtn.disabled = true;
+        confirmReplaceBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Confirm Replace';
+        
+        // Show success message
+        alert('Image replaced successfully!');
+      } catch (error) {
+        console.error('Replace error:', error);
+        alert('Failed to replace image. Please try again.');
+        confirmReplaceBtn.disabled = false;
+        confirmReplaceBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Confirm Replace';
+      }
+    });
+    
+    // Confirm delete button click handler
+    confirmDeleteBtn.addEventListener('click', async () => {
+      if (!currentImageData) return;
+      
+      confirmDeleteBtn.disabled = true;
+      confirmDeleteBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Deleting...';
+      
+      try {
+        await deleteImage(currentImageData.id, currentImageData.path);
+        
+        // Close modal and refresh images
+        deleteModal.hide();
+        loadCategoryImages(currentImageData.category);
+        
+        // Reset delete button
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Delete Image';
+        
+        // Show success message
+        alert('Image deleted successfully!');
+      } catch (error) {
+        console.error('Delete error:', error);
+        alert('Failed to delete image. Please try again.');
+        confirmDeleteBtn.disabled = false;
+        confirmDeleteBtn.innerHTML = '<i class="bi bi-trash me-2"></i>Delete Image';
+      }
+    });
+    
+    // Handle file selection
+    function handleFileSelect(e) {
+      if (e.target.files.length > 0) {
+        handleFiles(e.target.files);
+      }
+    }
+    
+    // Handle selected files
+    function handleFiles(files) {
+      selectedFiles = Array.from(files);
+      uploadPreview.innerHTML = '';
+      
+      selectedFiles.forEach((file, index) => {
+        if (!file.type.startsWith('image/')) {
+          selectedFiles.splice(index, 1);
+          return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+          const previewDiv = document.createElement('div');
+          previewDiv.className = 'mb-3 d-flex align-items-center';
+          previewDiv.innerHTML = `
+            <img src="${e.target.result}" alt="Preview" style="width: 100px; height: 75px; object-fit: cover; border-radius: 5px; margin-right: 15px;">
+            <div>
+              <p class="mb-1 fw-bold">${file.name}</p>
+              <p class="text-muted mb-0">${formatFileSize(file.size)}</p>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-danger ms-auto remove-file" data-index="${index}">
+              <i class="bi bi-x"></i>
+            </button>
+          `;
+          
+          uploadPreview.appendChild(previewDiv);
+        };
+        
+        reader.readAsDataURL(file);
+      });
+      
+      uploadBtn.disabled = selectedFiles.length === 0;
+      
+      // Add event listeners to remove buttons
+      setTimeout(() => {
+        document.querySelectorAll('.remove-file').forEach(button => {
+          button.addEventListener('click', (e) => {
+            const index = parseInt(e.currentTarget.getAttribute('data-index'));
+            selectedFiles.splice(index, 1);
+            e.currentTarget.closest('.d-flex').remove();
+            uploadBtn.disabled = selectedFiles.length === 0;
+          });
+        });
+      }, 100);
+    }
+    
+    // Load images by category
+    async function loadCategoryImages(category) {
+      const containerMap = {
+        'carousel': carouselImages,
+        'hero': heroImages,
+        'portfolio': portfolioImages
+      };
+      
+      const loadingMap = {
+        'carousel': carouselLoading,
+        'hero': heroLoading,
+        'portfolio': portfolioLoading
+      };
+      
+      const container = containerMap[category];
+      const loading = loadingMap[category];
+      
+      if (!container || !loading) return;
+      
+      // Show loading spinner
+      container.innerHTML = '';
+      loading.style.display = 'block';
+      
+      // Clear preview sections
+      if (category === 'carousel') {
+        document.getElementById('carouselPreview').innerHTML = '';
+      } else if (category === 'hero') {
+        document.getElementById('heroPreviewImage').src = '';
+      } else if (category === 'portfolio') {
+        document.getElementById('portfolioPreview').innerHTML = '';
+      }
+      
+      try {
+        const result = await getImagesByCategory(category);
+        
+        if (result.success) {
+          if (result.images.length === 0) {
+            container.innerHTML = `<p class="text-center text-muted">No ${category} images found. Upload some images to get started.</p>`;
+          } else {
+            result.images.forEach((image, index) => {
+              const imageCard = document.createElement('div');
+              imageCard.className = 'image-card';
+              imageCard.innerHTML = `
+                <img src="${image.url}" alt="${image.name}">
+                <div class="image-info">
+                  <p class="mb-1 text-truncate">${image.name}</p>
+                  <small class="text-muted">${formatDate(image.timestamp)}</small>
+                  <div class="image-actions">
+                    <button class="view-btn" title="View Image">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="replace-btn" title="Replace Image">
+                      <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                    <button class="delete-btn" title="Delete Image">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              `;
+              
+              container.appendChild(imageCard);
+              
+              // Add event listeners to buttons
+              const viewBtn = imageCard.querySelector('.view-btn');
+              const replaceBtn = imageCard.querySelector('.replace-btn');
+              const deleteBtn = imageCard.querySelector('.delete-btn');
+              
+              viewBtn.addEventListener('click', () => {
+                currentImageData = image;
+                modalImage.src = image.url;
+                modalImageInfo.innerHTML = `
+                  <strong>Name:</strong> ${image.name}<br>
+                  <strong>Category:</strong> ${capitalizeFirstLetter(image.category)}<br>
+                  <strong>Uploaded:</strong> ${formatDate(image.timestamp)}<br>
+                  <strong>Size:</strong> ${formatFileSize(image.size)}
+                `;
+                imageModal.show();
+              });
+              
+              replaceBtn.addEventListener('click', () => {
+                currentImageData = image;
+                replaceFileInput.value = '';
+                replacePreview.innerHTML = '';
+                confirmReplaceBtn.disabled = true;
+                replaceModal.show();
+              });
+              
+              deleteBtn.addEventListener('click', () => {
+                currentImageData = image;
+                deleteModal.show();
+              });
+              
+              // Populate preview sections
+              if (category === 'carousel') {
+                const carouselItem = document.createElement('div');
+                carouselItem.className = index === 0 ? 'carousel-item active' : 'carousel-item';
+                carouselItem.innerHTML = `<img src="${image.url}" alt="Carousel Image ${index + 1}">`;
+                document.getElementById('carouselPreview').appendChild(carouselItem);
+              } else if (category === 'hero' && index === 0) {
+                document.getElementById('heroPreviewImage').src = image.url;
+              } else if (category === 'portfolio' && index < 6) {
+                const portfolioItem = document.createElement('div');
+                portfolioItem.className = 'col-lg-4 col-md-6 portfolio-item';
+                
+                // Assign filter class based on index (for demo purposes)
+                const filterClasses = [
+                  'filter-remodeling',
+                  'filter-construction',
+                  'filter-repairs',
+                  'filter-design'
+                ];
+                
+                portfolioItem.classList.add(filterClasses[index % filterClasses.length]);
+                
+                portfolioItem.innerHTML = `
+                  <div class="portfolio-content h-100">
+                    <img src="${image.url}" class="img-fluid" alt="Portfolio Image">
+                    <div class="portfolio-info">
+                      <h4>Portfolio Item ${index + 1}</h4>
+                      <p>Category: ${filterClasses[index % filterClasses.length].replace('filter-', '')}</p>
+                      <a href="${image.url}" title="Preview" class="preview-link"><i class="bi bi-zoom-in"></i></a>
+                    </div>
+                  </div>
+                `;
+                
+                document.getElementById('portfolioPreview').appendChild(portfolioItem);
+              }
+            });
+            
+            // Initialize isotope for portfolio filters if in portfolio tab
+            if (category === 'portfolio') {
+              setTimeout(() => {
+                const portfolioIsotope = new Isotope(document.querySelector('#portfolioPreview'), {
+                  itemSelector: '.portfolio-item',
+                  layoutMode: 'fitRows'
+                });
+                
+                document.querySelectorAll('#adminPortfolioFilters li').forEach(filter => {
+                  filter.addEventListener('click', function() {
+                    document.querySelector('#adminPortfolioFilters .filter-active').classList.remove('filter-active');
+                    this.classList.add('filter-active');
+                    
+                    portfolioIsotope.arrange({
+                      filter: this.getAttribute('data-filter')
+                    });
+                  });
+                });
+              }, 100);
+            }
+          }
+        } else {
+          container.innerHTML = `<p class="text-center text-danger">Error loading images: ${result.error}</p>`;
+        }
+      } catch (error) {
+        console.error(`Error loading ${category} images:`, error);
+        container.innerHTML = `<p class="text-center text-danger">Error loading images. Please try again.</p>`;
+      } finally {
+        // Hide loading spinner
+        loading.style.display = 'none';
+      }
+    }
+    
+    // Helper function to format file size
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' bytes';
+      else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      else return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+    
+    // Helper function to format date
+    function formatDate(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleDateString();
+    }
+    
+    // Helper function to capitalize first letter
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+  </script>
+</body>
+
+</html>
