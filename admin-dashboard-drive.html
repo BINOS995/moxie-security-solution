@@ -39,6 +39,9 @@
         <button id="authBtn" class="btn btn-outline-primary me-2">
           <i class="bi bi-google me-2"></i>Connect Google Drive
         </button>
+        <button class="btn btn-danger me-2" onclick="clearAllImages()" title="Clear all images from all sections">
+          <i class="bi bi-trash me-2"></i>Clear All Images
+        </button>
         <button id="logoutBtn" class="logout-btn">
           <i class="bi bi-box-arrow-right me-2"></i>Logout
         </button>
@@ -98,7 +101,11 @@
               <select class="form-select" id="imageCategory">
                 <option value="carousel">Carousel Images</option>
                 <option value="hero">Hero Images</option>
-                <option value="portfolio">Portfolio Images</option>
+                <option value="security">Smart Security</option>
+                <option value="construction">Metal Works</option>
+                <option value="civil-engineering">Civil Engineering</option>
+                <option value="hvac">HVAC-Air conditioning</option>
+                <option value="general">General Portfolio</option>
               </select>
             </div>
             
@@ -115,8 +122,15 @@
       
       <!-- Carousel Images Tab -->
       <div class="tab-pane fade" id="carousel" role="tabpanel" aria-labelledby="carousel-tab">
-        <h4 class="mb-4">Carousel Images</h4>
-        <p class="text-muted">These images appear in the hero carousel section of the homepage.</p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h4 class="mb-1">Carousel Images</h4>
+            <p class="text-muted mb-0">These images appear in the hero carousel section of the homepage.</p>
+          </div>
+          <button class="btn btn-danger" onclick="clearCarouselImages()">
+            <i class="bi bi-trash me-2"></i>Clear All
+          </button>
+        </div>
         
         <div id="carouselLoading" class="loading-spinner">
           <div class="spinner-border text-primary" role="status">
@@ -144,8 +158,15 @@
       
       <!-- Hero Images Tab -->
       <div class="tab-pane fade" id="hero" role="tabpanel" aria-labelledby="hero-tab">
-        <h4 class="mb-4">Hero Images</h4>
-        <p class="text-muted">These images appear in the hero section with text overlay on the homepage.</p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h4 class="mb-1">Hero Images</h4>
+            <p class="text-muted mb-0">These images appear in the hero section with text overlay on the homepage.</p>
+          </div>
+          <button class="btn btn-danger" onclick="clearHeroImages()">
+            <i class="bi bi-trash me-2"></i>Clear All
+          </button>
+        </div>
         
         <div id="heroLoading" class="loading-spinner">
           <div class="spinner-border text-primary" role="status">
@@ -169,8 +190,15 @@
       
       <!-- Portfolio Images Tab -->
       <div class="tab-pane fade" id="portfolio" role="tabpanel" aria-labelledby="portfolio-tab">
-        <h4 class="mb-4">Portfolio Images</h4>
-        <p class="text-muted">These images appear in the projects section of the homepage.</p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h4 class="mb-1">Portfolio Images</h4>
+            <p class="text-muted mb-0">These images appear in the projects section of the homepage.</p>
+          </div>
+          <button class="btn btn-danger" onclick="clearPortfolioImages()">
+            <i class="bi bi-trash me-2"></i>Clear All
+          </button>
+        </div>
         
         <div id="portfolioLoading" class="loading-spinner">
           <div class="spinner-border text-primary" role="status">
@@ -182,10 +210,10 @@
         <!-- Portfolio Filters -->
         <ul class="portfolio-filters admin-filters mb-4" id="adminPortfolioFilters">
           <li data-filter="*" class="filter-active">All</li>
-          <li data-filter=".filter-remodeling">Smart Security</li>
+          <li data-filter=".filter-security">Smart Security</li>
           <li data-filter=".filter-construction">Metal Works</li>
-          <li data-filter=".filter-repairs">Civil Engineering</li>
-          <li data-filter=".filter-design">HVAC-Air conditioning</li>
+          <li data-filter=".filter-civil-engineering">Civil Engineering</li>
+          <li data-filter=".filter-hvac">HVAC-Air conditioning</li>
         </ul>
         
         <!-- Portfolio Preview -->
@@ -412,7 +440,7 @@
       const uploadBtn = document.getElementById('uploadBtn');
       const originalText = uploadBtn.innerHTML;
       
-      uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading...';
+      uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing and uploading...';
       uploadBtn.disabled = true;
       
       try {
@@ -431,10 +459,17 @@
         
       } catch (error) {
         console.error('Upload error:', error);
-        alert('Upload failed: ' + error.message);
+        let errorMessage = 'Upload failed: ' + error.message;
+        
+        // Handle localStorage quota exceeded error
+        if (error.name === 'QuotaExceededError' || error.message.includes('storage')) {
+          errorMessage = 'Storage limit reached. Please delete some older images or reduce file sizes.';
+        }
+        
+        alert(errorMessage);
       } finally {
         uploadBtn.innerHTML = originalText;
-        uploadBtn.disabled = true;
+        uploadBtn.disabled = selectedFiles.length === 0;
       }
     });
 
@@ -699,8 +734,78 @@
       initializeDriveManager();
     });
 
+    // Clear all images functions
+    window.clearCarouselImages = async () => {
+      if (confirm('Are you sure you want to clear all carousel images?')) {
+        const images = JSON.parse(localStorage.getItem('googleDriveImages') || '[]');
+        const filteredImages = images.filter(img => img.category !== 'carousel');
+        localStorage.setItem('googleDriveImages', JSON.stringify(filteredImages));
+        loadImagesByCategory('carousel');
+        updateCarouselPreview(filteredImages.filter(img => img.category === 'carousel'));
+      }
+    };
+
+    window.clearHeroImages = async () => {
+      if (confirm('Are you sure you want to clear all hero images?')) {
+        const images = JSON.parse(localStorage.getItem('googleDriveImages') || '[]');
+        const filteredImages = images.filter(img => img.category !== 'hero');
+        localStorage.setItem('googleDriveImages', JSON.stringify(filteredImages));
+        loadImagesByCategory('hero');
+        updateHeroPreview(filteredImages.filter(img => img.category === 'hero'));
+      }
+    };
+
+    window.clearPortfolioImages = async () => {
+      if (confirm('Are you sure you want to clear all portfolio images?')) {
+        const images = JSON.parse(localStorage.getItem('googleDriveImages') || '[]');
+        const filteredImages = images.filter(img => 
+          !['security', 'construction', 'civil-engineering', 'hvac', 'general'].includes(img.category)
+        );
+        localStorage.setItem('googleDriveImages', JSON.stringify(filteredImages));
+        localStorage.setItem('_portfolioUpdated', Date.now().toString());
+        loadImagesByCategory('portfolio');
+        updatePortfolioPreview(filteredImages.filter(img => 
+          ['security', 'construction', 'civil-engineering', 'hvac', 'general'].includes(img.category)
+        ));
+      }
+    };
+
+    // Update image display functions to include delete icons
+    const originalCreateImageElement = window.createImageElement || function(image, category) {
+      const div = document.createElement('div');
+      div.className = 'image-item';
+      div.innerHTML = `
+        <img src="${image.url}" alt="${image.name}" onclick="openImageModal('${image.id}', '${image.url}', '${image.name}')">
+        <div class="image-actions">
+          <button class="btn btn-sm btn-danger" onclick="deleteImage('${image.id}')" title="Delete">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      `;
+      return div;
+    };
+
+    // Override the display functions to use updated image elements
+    window.displayImages = function(images, containerId) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      
+      if (images.length === 0) {
+        container.innerHTML = '<p class="text-muted">No images found. Upload some images to get started.</p>';
+        return;
+      }
+
+      images.forEach(image => {
+        const imageElement = originalCreateImageElement(image);
+        container.appendChild(imageElement);
+      });
+    };
+
     // Make functions globally accessible
     window.checkStorageStatus = checkStorageStatus;
+    window.clearCarouselImages = clearCarouselImages;
+    window.clearHeroImages = clearHeroImages;
+    window.clearPortfolioImages = clearPortfolioImages;
   </script>
 
   <style>

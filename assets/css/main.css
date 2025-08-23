@@ -132,9 +132,12 @@ h6 {
 # Global Header
 --------------------------------------------------------------*/
 .header {
-  --background-color: rgba(255, 255, 255, 0);
+  --background-color: rgba(0, 0, 0, 0.8);
   --default-color: #ffffff;
   --heading-color: #ffffff;
+  --nav-color: #ffffff;
+  --nav-hover-color: #b9e469;
+  --admin-link-color: #b9e469;
   color: var(--default-color);
   background-color: var(--background-color);
   padding: 20px 0;
@@ -256,6 +259,15 @@ h6 {
   .navmenu .admin-link {
     color: var(--admin-link-color);
     font-weight: 600;
+    background: rgba(185, 228, 105, 0.2);
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .navmenu .admin-link:hover {
+    background: rgba(185, 228, 105, 0.3);
+    color: var(--admin-link-color);
   }
 
   .navmenu .admin-link i {
@@ -1312,6 +1324,16 @@ section,
 /*--------------------------------------------------------------
 # Projects Section
 --------------------------------------------------------------*/
+.projects .isotope-container {
+  min-height: 400px;
+}
+
+.projects:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
 .projects .portfolio-filters {
   padding: 0;
   margin: 0 auto 20px auto;
@@ -1709,6 +1731,44 @@ section,
   }
 }
 
+/* Fix for portfolio section overlap */
+.projects {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 60px;
+  display: block !important;
+  min-height: 500px;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.projects .container {
+  position: relative;
+  z-index: 1;
+}
+
+.about {
+  position: relative;
+  z-index: 2;
+  clear: both;
+  margin-top: 60px;
+}
+
+/* Force portfolio section visibility */
+#projects {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  min-height: 600px !important;
+}
+
+#portfolio-container {
+  min-height: 400px !important;
+  display: block !important;
+}
+
 .about .about-img img {
   position: absolute;
   inset: 0;
@@ -1747,6 +1807,32 @@ section,
   margin: 0;
   font-family: var(--heading-font);
   font-size: 16px;
+}
+
+/*--------------------------------------------------------------
+# Connection Status
+--------------------------------------------------------------*/
+.connection-status {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 9999;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.connection-status.online {
+  background-color: #28a745;
+  color: white;
+}
+
+.connection-status.offline {
+  background-color: #dc3545;
+  color: white;
 }
 
 /*--------------------------------------------------------------

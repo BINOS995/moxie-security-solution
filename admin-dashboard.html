@@ -24,6 +24,9 @@
   <!-- Main CSS Files -->
   <link href="assets/css/main.css" rel="stylesheet">
   <link href="assets/css/admin.css" rel="stylesheet">
+  
+  <!-- Firebase Error Handler -->
+  <script src="assets/js/firebase-error-handler.js"></script>
 </head>
 
 <body>
@@ -33,9 +36,15 @@
         <img src="assets/img/moxielogo.png" alt="Moxie Ghana Logo">
         <span class="ms-3 fw-bold">Photo Management System</span>
       </div>
-      <button id="logoutBtn" class="logout-btn">
-        <i class="bi bi-box-arrow-right me-2"></i>Logout
-      </button>
+      <div class="dashboard-controls">
+        <div id="connection-status-admin" class="connection-status online me-3">Online</div>
+        <a href="index.html" class="btn btn-outline-secondary me-2">
+          <i class="bi bi-arrow-left me-2"></i>Back to Site
+        </a>
+        <button id="logoutBtn" class="logout-btn">
+          <i class="bi bi-box-arrow-right me-2"></i>Logout
+        </button>
+      </div>
     </div>
     
     <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -95,8 +104,15 @@
       
       <!-- Carousel Images Tab -->
       <div class="tab-pane fade" id="carousel" role="tabpanel" aria-labelledby="carousel-tab">
-        <h4 class="mb-4">Carousel Images</h4>
-        <p class="text-muted">These images appear in the hero carousel section of the homepage.</p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h4 class="mb-1">Carousel Images</h4>
+            <p class="text-muted">These images appear in the hero carousel section of the homepage.</p>
+          </div>
+          <button type="button" class="btn btn-outline-danger" id="clearCarouselBtn">
+            <i class="bi bi-trash me-2"></i>Clear All
+          </button>
+        </div>
         
         <div id="carouselLoading" class="loading-spinner">
           <div class="spinner-border text-primary" role="status">
@@ -124,8 +140,15 @@
       
       <!-- Hero Images Tab -->
       <div class="tab-pane fade" id="hero" role="tabpanel" aria-labelledby="hero-tab">
-        <h4 class="mb-4">Hero Images</h4>
-        <p class="text-muted">These images appear in the hero section with text overlay on the homepage.</p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h4 class="mb-1">Hero Images</h4>
+            <p class="text-muted">These images appear in the hero section with text overlay on the homepage.</p>
+          </div>
+          <button type="button" class="btn btn-outline-danger" id="clearHeroBtn">
+            <i class="bi bi-trash me-2"></i>Clear All
+          </button>
+        </div>
         
         <div id="heroLoading" class="loading-spinner">
           <div class="spinner-border text-primary" role="status">
@@ -149,8 +172,15 @@
       
       <!-- Portfolio Images Tab -->
       <div class="tab-pane fade" id="portfolio" role="tabpanel" aria-labelledby="portfolio-tab">
-        <h4 class="mb-4">Portfolio Images</h4>
-        <p class="text-muted">These images appear in the projects section of the homepage.</p>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h4 class="mb-1">Portfolio Images</h4>
+            <p class="text-muted">These images appear in the projects section of the homepage.</p>
+          </div>
+          <button type="button" class="btn btn-outline-danger" id="clearPortfolioBtn">
+            <i class="bi bi-trash me-2"></i>Clear All
+          </button>
+        </div>
         
         <div id="portfolioLoading" class="loading-spinner">
           <div class="spinner-border text-primary" role="status">
@@ -510,6 +540,67 @@
       }, 100);
     }
     
+    // Clear all images from a category
+    async function clearAllImages(category) {
+      if (!confirm(`Are you sure you want to delete ALL ${category} images? This action cannot be undone.`)) {
+        return;
+      }
+      
+      const containerMap = {
+        'carousel': carouselImages,
+        'hero': heroImages,
+        'portfolio': portfolioImages
+      };
+      
+      const loadingMap = {
+        'carousel': carouselLoading,
+        'hero': heroLoading,
+        'portfolio': portfolioLoading
+      };
+      
+      const container = containerMap[category];
+      const loading = loadingMap[category];
+      
+      if (!container || !loading) return;
+      
+      // Show loading spinner
+      loading.style.display = 'block';
+      
+      try {
+        const result = await getImagesByCategory(category);
+        if (result.success && result.images.length > 0) {
+          let successCount = 0;
+          let errorCount = 0;
+          
+          for (const image of result.images) {
+            try {
+              await deleteImage(image.id, image.fileName);
+              successCount++;
+            } catch (error) {
+              console.error(`Error deleting ${image.name}:`, error);
+              errorCount++;
+            }
+          }
+          
+          if (errorCount === 0) {
+            alert(`Successfully deleted ${successCount} ${category} images!`);
+          } else {
+            alert(`Deleted ${successCount} images. ${errorCount} images could not be deleted.`);
+          }
+          
+          // Reload the category
+          await loadCategoryImages(category);
+        } else {
+          alert('No images found to delete.');
+        }
+      } catch (error) {
+        console.error(`Error clearing ${category} images:`, error);
+        alert('Error clearing images. Please try again.');
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+    
     // Load images by category
     async function loadCategoryImages(category) {
       const containerMap = {
@@ -617,10 +708,10 @@
                 
                 // Assign filter class based on index (for demo purposes)
                 const filterClasses = [
-                  'filter-remodeling',
-                  'filter-construction',
-                  'filter-repairs',
-                  'filter-design'
+                  'filter-wedding',
+                  'filter-fashion',
+                  'filter-event',
+                  'filter-portrait'
                 ];
                 
                 portfolioItem.classList.add(filterClasses[index % filterClasses.length]);
@@ -690,6 +781,60 @@
     function capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     }
+    
+    // Event listeners for clear all buttons
+    document.getElementById('clearCarouselBtn').addEventListener('click', () => {
+      clearAllImages('carousel');
+    });
+    
+    document.getElementById('clearPortfolioBtn').addEventListener('click', () => {
+      clearAllImages('portfolio');
+    });
+    
+    document.getElementById('clearHeroBtn').addEventListener('click', () => {
+      clearAllImages('hero');
+    });
+    
+    // Connection status monitoring
+    function updateConnectionStatus() {
+      const statusElement = document.getElementById('connection-status-admin');
+      if (!statusElement) return;
+      
+      if (navigator.onLine) {
+        statusElement.textContent = 'Online';
+        statusElement.className = 'connection-status online';
+      } else {
+        statusElement.textContent = 'Offline';
+        statusElement.className = 'connection-status offline';
+      }
+    }
+    
+    // Initial connection status
+    updateConnectionStatus();
+    
+    // Listen for connection changes
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+    
+    // Monitor Firebase connection
+    setInterval(async () => {
+      const statusElement = document.getElementById('connection-status-admin');
+      if (!statusElement) return;
+      
+      try {
+        const status = await checkConnectionStatus();
+        if (status.success) {
+          statusElement.textContent = 'Online';
+          statusElement.className = 'connection-status online';
+        } else {
+          statusElement.textContent = 'Offline';
+          statusElement.className = 'connection-status offline';
+        }
+      } catch (error) {
+        statusElement.textContent = 'Offline';
+        statusElement.className = 'connection-status offline';
+      }
+    }, 5000);
   </script>
 </body>
 

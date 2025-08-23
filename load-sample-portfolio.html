@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Sample Portfolio</title>
+</head>
+<body>
+    <script>
+        // Load sample portfolio images directly
+        const sampleImages = [
+            {
+                url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRTVFNUVBIi8+CjxwYXRoIGQ9Ik0xNTAgMTIwQzE1MCAxMDQuNTM2IDE2Mi41MzYgOTIgMTc4IDkySDIyMkMyMzcuNDY0IDkyIDI1MCAxMDQuNTM2IDI1MCAxMjBWMjAwQzI1MCAyMTUuNDY0IDIzNy40NjQgMjI4IDIyMiAyMjhIMTc4QzE2Mi41MzYgMjI4IDE1MCAyMTUuNDY0IDE1MCAyMDBWMTIwWiIgZmlsbD0iIzk5OTk5OSIvPgo8Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNTAiIHI9IjMwIiBmaWxsPSIjQ0NDQ0NDIi8+Cjwvc3ZnPgo=',
+                name: 'Construction Project',
+                category: 'filter-construction'
+            },
+            {
+                url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRkZENkJGIi8+CjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNGRkE1MDAiLz4KPHRleHQgeD0iMjAwIiB5PSIxNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IndoaXRlIj5TZWN1cml0eSBTeXN0ZW08L3RleHQ+Cjwvc3ZnPgo=',
+                name: 'Security Installation',
+                category: 'filter-security'
+            },
+            {
+                url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjRTBGN0ZGIi8+CjxyZWN0IHg9IjUwIiB5PSI1MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiMwMDdCRkYiLz4KPHRleHQgeD0iMjAwIiB5PSIxNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IndoaXRlIj5IVkFDIFN5c3RlbTwvdGV4dD4KPC9zdmc+Cg==',
+                name: 'HVAC Installation',
+                category: 'filter-hvac'
+            }
+        ];
+
+        // Add to local storage for portfolio
+        localStorage.setItem('portfolioImages', JSON.stringify(sampleImages.map(img => img.url)));
+        
+        // Add to Google Drive storage format
+        localStorage.setItem('googleDriveImages', JSON.stringify(
+            sampleImages.map(img => ({
+                id: 'sample_' + Date.now() + '_' + Math.random(),
+                name: img.name,
+                url: img.url,
+                category: img.category,
+                timestamp: new Date().toISOString()
+            }))
+        ));
+
+        alert('Sample portfolio images loaded! Redirecting to portfolio page...');
+        window.location.href = 'index.html#projects';
+    </script>
+</body>
+</html>

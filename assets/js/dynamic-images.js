@@ -32,17 +32,141 @@
     }
 
     /**
-     * Load images from local storage
+     * Clear all images from local storage
+     */
+    function clearAllImages() {
+        try {
+            localStorage.removeItem('googleDriveImages');
+            localStorage.removeItem('moxie_ghana_images');
+            console.log('All images cleared from local storage');
+            
+            // Clear displayed images
+            clearDisplayedImages();
+            
+            return true;
+        } catch (error) {
+            console.error('Error clearing images:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Clear images by category
+     */
+    function clearImagesByCategory(category) {
+        try {
+            const images = loadImagesFromLocalStorage();
+            const filteredImages = images.filter(img => img.category !== category);
+            
+            localStorage.setItem('googleDriveImages', JSON.stringify(filteredImages));
+            console.log(`Cleared ${images.length - filteredImages.length} images from category: ${category}`);
+            
+            // Refresh displayed images
+            refreshImages();
+            return true;
+        } catch (error) {
+            console.error('Error clearing images by category:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Delete a specific image by ID
+     */
+    function deleteImageById(imageId) {
+        try {
+            const images = loadImagesFromLocalStorage();
+            const filteredImages = images.filter(img => img.id !== imageId);
+            
+            localStorage.setItem('googleDriveImages', JSON.stringify(filteredImages));
+            console.log(`Deleted image with ID: ${imageId}`);
+            
+            // Refresh displayed images
+            refreshImages();
+            return true;
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Clear all displayed images from the page
+     */
+    function clearDisplayedImages() {
+        // Clear carousel images
+        const carouselImages = document.querySelectorAll('#hero-carousel .carousel-item img');
+        carouselImages.forEach(img => {
+            img.src = 'assets/img/placeholder.jpg'; // Placeholder image
+            img.alt = 'Placeholder';
+        });
+
+        // Clear hero images
+        const heroImages = document.querySelectorAll('#hero .carousel-item img, #hero-carousel .carousel-item img, .hero img');
+        heroImages.forEach(img => {
+            img.src = 'assets/img/placeholder.jpg'; // Placeholder image
+            img.alt = 'Placeholder';
+        });
+
+        // Clear portfolio images
+        const portfolioImages = document.querySelectorAll('.portfolio-item img');
+        portfolioImages.forEach(img => {
+            img.src = 'assets/img/placeholder.jpg'; // Placeholder image
+            img.alt = 'Placeholder';
+        });
+
+        // Clear admin dashboard images
+        const adminImages = document.querySelectorAll('#carouselImages img, #heroImages img, #portfolioImages img');
+        adminImages.forEach(img => {
+            img.src = 'assets/img/placeholder.jpg'; // Placeholder image
+            img.alt = 'Placeholder';
+        });
+
+        console.log('All displayed images cleared');
+    }
+
+    /**
+     * Load images from local storage with Google Drive priority
      */
     function loadImagesFromLocalStorage() {
         try {
-            const storedImages = localStorage.getItem('moxie_ghana_images');
-            if (!storedImages) {
-                console.log('No images found in local storage');
-                return [];
+            console.log('Loading images from local storage...');
+            
+            // Load Google Drive images with priority
+            const googleDriveImages = localStorage.getItem('googleDriveImages');
+            if (googleDriveImages) {
+                try {
+                    const googleImages = JSON.parse(googleDriveImages);
+                    const formattedGoogleImages = googleImages.map(img => ({
+                        id: img.id,
+                        name: img.name,
+                        data: img.data || img.url,
+                        category: img.category || 'portfolio',
+                        type: img.type || 'image/jpeg',
+                        timestamp: img.timestamp || Date.now(),
+                        size: img.size || 0
+                    }));
+                    console.log('Google Drive images found:', formattedGoogleImages.length);
+                    return formattedGoogleImages;
+                } catch (e) {
+                    console.error('Error parsing Google Drive images:', e);
+                }
             }
             
-            return JSON.parse(storedImages);
+            // Fallback to legacy images if no Google Drive images
+            const legacyImages = localStorage.getItem('moxie_ghana_images');
+            if (legacyImages) {
+                try {
+                    const legacyImagesData = JSON.parse(legacyImages);
+                    console.log('Legacy images found:', legacyImagesData.length);
+                    return legacyImagesData;
+                } catch (e) {
+                    console.error('Error parsing legacy images:', e);
+                }
+            }
+            
+            console.log('No images found in local storage');
+            return [];
         } catch (error) {
             console.error('Error loading images from local storage:', error);
             return [];
@@ -121,34 +245,210 @@
     }
 
     /**
-     * Update hero images
+     * Update hero images with Google Drive integration
      */
     function updateHeroImages(images) {
-        const heroImages = document.querySelectorAll('#hero .carousel-item img');
+        const heroImages = document.querySelectorAll('#hero .carousel-item img, #hero-carousel .carousel-item img, .hero img');
         console.log('Found hero images:', heroImages.length);
         
         if (heroImages.length === 0) {
-            console.warn('No hero images found with selector: #hero .carousel-item img');
+            console.warn('No hero images found');
             return;
         }
 
-        const heroImagesData = images.filter(img => img.category === 'hero');
-        console.log('Hero images to display:', heroImagesData.length);
+        // Filter Google Drive images for hero/carousel use
+        const heroImagesData = images.filter(img => 
+            img.category && ['hero', 'carousel', 'banner', 'general'].includes(img.category)
+        );
+        console.log('Google Drive hero images to display:', heroImagesData.length);
         
         if (heroImagesData.length > 0) {
-            heroImages.forEach((img, index) => {
-                if (heroImagesData[index]) {
-                    let imageUrl = heroImagesData[index].data;
+            // Replace hero carousel with Google Drive images
+            const heroCarousel = document.querySelector('#hero-carousel') || document.querySelector('#hero .carousel');
+            if (heroCarousel && heroImagesData.length > 0) {
+                // Clear existing carousel items
+                const carouselInner = heroCarousel.querySelector('.carousel-inner');
+                if (carouselInner) {
+                    carouselInner.innerHTML = '';
                     
-                    // Use data URL directly if it's already formatted, otherwise convert
+                    // Create new carousel items for each Google Drive image
+                    heroImagesData.forEach((img, index) => {
+                        let imageUrl = img.data;
+                        
+                        if (!imageUrl.startsWith('data:')) {
+                            imageUrl = base64ToBlobUrl(imageUrl, img.type);
+                        }
+                        
+                        if (imageUrl) {
+                            const carouselItem = createHeroCarouselItem(imageUrl, img.name, img.description || 'Professional construction services', index === 0);
+                            carouselInner.appendChild(carouselItem);
+                        }
+                    });
+                    
+                    console.log(`Replaced hero carousel with ${heroImagesData.length} Google Drive images`);
+                } else {
+                    // Fallback for simple hero images
+                    heroImages.forEach((img, index) => {
+                        if (heroImagesData[index]) {
+                            let imageUrl = heroImagesData[index].data;
+                            
+                            if (!imageUrl.startsWith('data:')) {
+                                imageUrl = base64ToBlobUrl(imageUrl, heroImagesData[index].type);
+                            }
+                            
+                            if (imageUrl) {
+                                img.src = imageUrl;
+                                img.alt = heroImagesData[index].name || 'Hero image';
+                            }
+                        }
+                    });
+                }
+            } else {
+                // Fallback for simple hero images
+                heroImages.forEach((img, index) => {
+                    if (heroImagesData[index]) {
+                        let imageUrl = heroImagesData[index].data;
+                        
+                        if (!imageUrl.startsWith('data:')) {
+                            imageUrl = base64ToBlobUrl(imageUrl, heroImagesData[index].type);
+                        }
+                        
+                        if (imageUrl) {
+                            img.src = imageUrl;
+                            img.alt = heroImagesData[index].name || 'Hero image';
+                            console.log(`Updated hero image ${index + 1}:`, imageUrl);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    /**
+     * Create hero carousel item
+     */
+    function createHeroCarouselItem(imageUrl, title, subtitle, isActive = false) {
+        const div = document.createElement('div');
+        div.className = `carousel-item ${isActive ? 'active' : ''}`;
+        
+        div.innerHTML = `
+            <img src="${imageUrl}" alt="${title}" loading="lazy">
+            <div class="carousel-container">
+                <div class="container">
+                    <h2 class="animate__animated animate__fadeInDown">${title}</h2>
+                    <p class="animate__animated animate__fadeInUp animate__delay-1s">${subtitle}</p>
+                    <a href="#about" class="btn-get-started animate__animated animate__fadeInUp animate__delay-2s scrollto">Get Started</a>
+                </div>
+            </div>
+        `;
+        
+        return div;
+    }
+
+    /**
+     * Update portfolio images with Google Drive integration
+     */
+    function updatePortfolioImages(images) {
+        const portfolioContainer = document.querySelector('#portfolio-container, .portfolio-container, .isotope-container');
+        const googleDriveImages = images.filter(img => 
+            img.category === 'security' || 
+            img.category === 'construction' || 
+            img.category === 'civil-engineering' || 
+            img.category === 'hvac' || 
+            img.category === 'general'
+        );
+        
+        if (googleDriveImages.length === 0) {
+            console.log('No portfolio images to display');
+            return;
+        }
+
+        if (portfolioContainer) {
+            // Clear existing dynamic items
+            const existingDynamicItems = portfolioContainer.querySelectorAll('.dynamic-portfolio-item');
+            existingDynamicItems.forEach(item => item.remove());
+            
+            // Also update existing portfolio items to ensure consistent URLs
+            const existingItems = portfolioContainer.querySelectorAll('.portfolio-item');
+            existingItems.forEach(item => {
+                const img = item.querySelector('img');
+                const glightboxLink = item.querySelector('.glightbox');
+                if (img && glightboxLink) {
+                    // Ensure the lightbox uses the same URL as the thumbnail
+                    glightboxLink.href = img.src;
+                }
+            });
+            
+            // Add new items for each category
+            const categoryToFilterClass = {
+                'security': 'filter-security',
+                'construction': 'filter-construction',
+                'civil-engineering': 'filter-civil-engineering',
+                'hvac': 'filter-hvac',
+                'general': 'filter-construction'
+            };
+            
+            const categoryNames = {
+                'security': 'Smart Security',
+                'construction': 'Metal Works',
+                'civil-engineering': 'Civil Engineering',
+                'hvac': 'HVAC-Air conditioning',
+                'general': 'General Construction'
+            };
+            
+            googleDriveImages.forEach(image => {
+                let imageUrl = image.data;
+                if (!imageUrl.startsWith('data:')) {
+                    imageUrl = base64ToBlobUrl(imageUrl, image.type);
+                }
+                
+                if (imageUrl) {
+                    const category = image.category || 'general';
+                    const filterClass = categoryToFilterClass[category] || 'filter-construction';
+                    
+                    const newItem = createPortfolioItem(
+                        imageUrl,
+                        image.name || 'Project',
+                        categoryNames[category] || 'Construction Services',
+                        category
+                    );
+                    newItem.classList.add('dynamic-portfolio-item');
+                    portfolioContainer.appendChild(newItem);
+                }
+            });
+            
+            // Refresh isotope layout if available
+            if (window.jQuery && portfolioContainer.classList.contains('isotope-container')) {
+                try {
+                    jQuery(portfolioContainer).isotope('layout');
+                } catch (e) {
+                    console.log('Isotope layout refresh:', e);
+                }
+            }
+        } else {
+            // Fallback to updating existing items if container not found
+            const portfolioImages = document.querySelectorAll('.portfolio-item img');
+            portfolioImages.forEach((img, index) => {
+                if (googleDriveImages[index]) {
+                    let imageUrl = googleDriveImages[index].data;
+                    
                     if (!imageUrl.startsWith('data:')) {
-                        imageUrl = base64ToBlobUrl(imageUrl, heroImagesData[index].type);
+                        imageUrl = base64ToBlobUrl(imageUrl, googleDriveImages[index].type);
                     }
                     
                     if (imageUrl) {
                         img.src = imageUrl;
-                        img.alt = heroImagesData[index].name || 'Hero image';
-                        console.log(`Updated hero image ${index + 1}:`, imageUrl);
+                        img.alt = googleDriveImages[index].name || 'Portfolio image';
+                        
+                        // Update glightbox href to use the same URL as thumbnail
+                        const portfolioContent = img.closest('.portfolio-content');
+                        if (portfolioContent) {
+                            const glightboxLink = portfolioContent.querySelector('.glightbox');
+                            if (glightboxLink) {
+                                glightboxLink.href = imageUrl;
+                                glightboxLink.title = googleDriveImages[index].name || 'Project';
+                            }
+                        }
                     }
                 }
             });
@@ -156,47 +456,40 @@
     }
 
     /**
-     * Update portfolio images
+     * Create a portfolio item element
      */
-    function updatePortfolioImages(images) {
-        const portfolioImages = document.querySelectorAll('.portfolio-item img');
-        console.log('Found portfolio images:', portfolioImages.length);
+    function createPortfolioItem(imageUrl, title, description, categoryClass) {
+        // Map category to the correct filter class used by the portfolio
+        const categoryToFilterClass = {
+            'security': 'filter-security',
+            'construction': 'filter-construction',
+            'civil-engineering': 'filter-civil-engineering',
+            'hvac': 'filter-hvac',
+            'general': 'filter-construction' // Default for general portfolio
+        };
         
-        if (portfolioImages.length === 0) {
-            console.warn('No portfolio images found with selector: .portfolio-item img');
-            return;
-        }
-
-        const portfolioImagesData = images.filter(img => img.category === 'portfolio');
-        console.log('Portfolio images to display:', portfolioImagesData.length);
+        const filterClass = categoryToFilterClass[categoryClass] || 'filter-construction';
         
-        if (portfolioImagesData.length > 0) {
-            portfolioImages.forEach((img, index) => {
-                if (portfolioImagesData[index]) {
-                    let imageUrl = portfolioImagesData[index].data;
-                    
-                    // Use data URL directly if it's already formatted, otherwise convert
-                    if (!imageUrl.startsWith('data:')) {
-                        imageUrl = base64ToBlobUrl(imageUrl, portfolioImagesData[index].type);
-                    }
-                    
-                    if (imageUrl) {
-                        img.src = imageUrl;
-                        img.alt = portfolioImagesData[index].name || 'Portfolio image';
-                        
-                        // Update glightbox href
-                        const portfolioContent = img.closest('.portfolio-content');
-                        if (portfolioContent) {
-                            const glightboxLink = portfolioContent.querySelector('.glightbox');
-                            if (glightboxLink) {
-                                glightboxLink.href = imageUrl;
-                            }
-                        }
-                        console.log(`Updated portfolio image ${index + 1}:`, imageUrl);
-                    }
-                }
-            });
-        }
+        const div = document.createElement('div');
+        div.className = `col-lg-4 col-md-6 portfolio-item isotope-item ${filterClass}`;
+        
+        div.innerHTML = `
+            <div class="portfolio-content h-100">
+                <img src="${imageUrl}" class="img-fluid" alt="${title}" loading="lazy">
+                <div class="portfolio-info">
+                    <h4>${title}</h4>
+                    <p>${description}</p>
+                    <a href="${imageUrl}" title="${title}" data-gallery="portfolio-gallery" class="glightbox preview-link" aria-label="View ${title} project">
+                        <i class="bi bi-zoom-in"></i>
+                    </a>
+                    <a href="#" title="More Details" class="details-link" aria-label="View more details">
+                        <i class="bi bi-link-45deg"></i>
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        return div;
     }
 
     /**
@@ -244,6 +537,36 @@
     }
 
     /**
+     * Load sample Google Drive images for testing
+     */
+    function loadSampleGoogleDriveImages() {
+        const sampleGoogleImages = [
+            {
+                name: 'Construction Project 1',
+                category: 'construction',
+                type: 'image/jpeg',
+                data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/AB8A'
+            },
+            {
+                name: 'HVAC Installation',
+                category: 'hvac',
+                type: 'image/jpeg',
+                data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/AB8A'
+            },
+            {
+                name: 'Security Camera Setup',
+                category: 'security',
+                type: 'image/jpeg',
+                data: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcICQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwA/AB8A'
+            }
+        ];
+        
+        localStorage.setItem('googleDriveImages', JSON.stringify(sampleGoogleImages));
+        console.log('Sample Google Drive images loaded!');
+        initDynamicImages();
+    }
+
+    /**
      * Initialize dynamic image loading
      */
     function initDynamicImages() {
@@ -258,6 +581,21 @@
         if (images.length === 0) {
             console.log('No images found to display');
             console.log('Run loadSampleImages() to add test images');
+            console.log('OR run loadSampleGoogleDriveImages() to test Google Drive integration');
+            
+            // Also check if there are any Google Drive images
+            const googleDriveImages = localStorage.getItem('googleDriveImages');
+            if (googleDriveImages) {
+                try {
+                    const parsed = JSON.parse(googleDriveImages);
+                    console.log('Found Google Drive images:', parsed.length);
+                    if (parsed.length > 0) {
+                        console.log('Sample image:', parsed[0]);
+                    }
+                } catch (e) {
+                    console.error('Error parsing Google Drive images:', e);
+                }
+            }
             updateStatusIndicator([]);
             return;
         }

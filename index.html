@@ -45,8 +45,11 @@
   <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
   <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
 
-  <!-- Main CSS File -->
+  <!-- Template Main CSS File -->
   <link href="assets/css/main.css" rel="stylesheet">
+
+  <!-- Firebase Error Handler -->
+  <script src="assets/js/firebase-error-handler.js"></script>
   
   <!-- Dynamic Image Loader -->
   <script src="assets/js/dynamic-images.js" defer></script>
@@ -148,6 +151,9 @@
 </head>
 
 <body class="index-page">
+
+  <!-- Connection Status Indicator -->
+  <div id="connection-status" class="connection-status online">Online</div>
 
   <!-- Dynamic Image Status -->
   <div id="image-status" style="position: fixed; top: 70px; right: 10px; z-index: 1000; background: rgba(0,0,0,0.8); color: white; padding: 8px 12px; border-radius: 5px; font-size: 12px; display: none;">
@@ -320,158 +326,19 @@
 
           <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="100">
             <li data-filter="*" class="filter-active">All</li>
-            <li data-filter=".filter-remodeling">smart Security </li>
+            <li data-filter=".filter-security">Smart Security</li>
             <li data-filter=".filter-construction">Metal Works</li>
-            <li data-filter=".filter-repairs">Civil Engineering</li>
-            <li data-filter=".filter-design">HVAC-Air conditioning</li>
+            <li data-filter=".filter-civil-engineering">Civil Engineering</li>
+            <li data-filter=".filter-hvac">HVAC-Air conditioning</li>
           </ul><!-- End Portfolio Filters -->
 
-          <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-remodeling">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/remo4.jpg" class="img-fluid" alt="Electronic fencing installation" loading="lazy">
-                <div class="portfolio-info">
-                  <h4>electronic fencing</h4>
-                  <p>electronic fence installation</p>
-                  <a href="assets/img/projects/remo4.jpg" title="Electronic Fencing" data-gallery="portfolio-gallery-app" class="glightbox preview-link" aria-label="View electronic fencing project"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link" aria-label="View more details"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-construction">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/welding.jpeg" class="img-fluid" alt="Professional welding and metal fabrication" loading="lazy">
-                <div class="portfolio-info">
-                  <h4>Metal works</h4>
-                  
-                  <a href="assets/img/projects/welding.jpeg" title="Metal Works" data-gallery="portfolio-gallery-product" class="glightbox preview-link" aria-label="View metal works project"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link" aria-label="View more details"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-repairs">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/const1.jpeg" class="img-fluid" alt="Building construction project" loading="lazy">
-                <div class="portfolio-info">
-                  <h4>Building Construction</h4>
-                  <p>Building Construction</p>
-                  <a href="assets/img/projects/const1.jpeg" title="Building Construction" data-gallery="portfolio-gallery-branding" class="glightbox preview-link" aria-label="View construction project"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link" aria-label="View more details"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-design">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/air 1.jpeg" class="img-fluid" alt="HVAC air conditioning installation" loading="lazy">
-                <div class="portfolio-info">
-                  <h4>Air conditioners</h4>
-                  <p>Air conditioners</p>
-                  <a href="assets/img/projects/air 1.jpeg" title="Air conditioners" data-gallery="portfolio-gallery-book" class="glightbox preview-link" aria-label="View HVAC project"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link" aria-label="View more details"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-remodeling">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/remo2.jpeg" class="img-fluid" alt="Gate motor installation" loading="lazy">
-                <div class="portfolio-info">
-                  <h4>Garage doors</h4>
-                  <p>gate motor installation</p>
-                  <a href="assets/img/projects/remo2.jpeg" title="Garage" data-gallery="portfolio-gallery-app" class="glightbox preview-link" aria-label="View gate motor project"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link" aria-label="View more details"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-construction">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/metal works.jpeg" class="img-fluid" alt="Custom metal fabrication services" loading="lazy">
-                <div class="portfolio-info">
-                  <h4>Metal Works</h4>
-             
-                  <a href="assets/img/projects/metal works.jpeg" title="Metal Works" data-gallery="portfolio-gallery-product" class="glightbox preview-link" aria-label="View metal fabrication project"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link" aria-label="View more details"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-repairs">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/const2.jpeg" class="img-fluid" alt="Construction wall designs" loading="lazy">
-                <div class="portfolio-info">
-                  <h4>Wall Designs</h4>
-                  <p>Wall Designs</p>
-                  <a href="assets/img/projects/const2.jpeg" title="Wall Designs" data-gallery="portfolio-gallery-branding" class="glightbox preview-link" aria-label="View wall designs project"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link" aria-label="View more details"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-design">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/air 2.jpeg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Air conditioners</h4>
-                  <p>Lorem Air conditioners</p>
-                  <a href="assets/img/projects/air 2.jpeg" title="Air Conditioners" data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-remodeling">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/remo3.jpg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>CCTV</h4>
-                  <p>CCTV Camera Installation</p>
-                  <a href="assets/img/projects/remo3.jpg" title="CCTV" data-gallery="portfolio-gallery-app" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-construction">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/metal work 2.jpeg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Metal Works</h4>
-             
-                  <a href="assets/img/projects/metal work 2.jpeg" title="Metal Works" data-gallery="portfolio-gallery-product" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-repairs">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/const 3.jpeg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Swimming Pool</h4>
-                  <p>Swimming Pool</p>
-                  <a href="assets/img/projects/const 3.jpeg" title="Swimming Pool" data-gallery="portfolio-gallery-branding" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
-            <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-design">
-              <div class="portfolio-content h-100">
-                <img src="assets/img/projects/air  3.jpeg" class="img-fluid" alt="">
-                <div class="portfolio-info">
-                  <h4>Air conditioners</h4>
-                  <p>Air conditioners</p>
-                  <a href="assets/img/projects/design-3.jpg" title="Branding 3" data-gallery="portfolio-gallery-book" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
-                  <a href="#" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
-                </div>
-              </div>
-            </div><!-- End Portfolio Item -->
-
+          <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200" id="portfolio-container">
+            <!-- Dynamic portfolio items will be loaded here -->
+            <!-- Debug content to ensure section is visible -->
+            <div class="col-lg-4 col-md-6 portfolio-item filter-all" style="min-height: 200px; background: #f8f9fa; border: 1px solid #dee2e6; margin: 10px; padding: 20px; text-align: center;">
+              <p style="margin: 0; color: #666;">Portfolio section is loading...</p>
+              <p style="margin: 10px 0 0 0; font-size: 12px; color: #999;">If images don't appear, check if localStorage has portfolio images</p>
+            </div>
           </div><!-- End Portfolio Container -->
 
         </div>
@@ -749,6 +616,166 @@
     }, 800); // Delay for a subtle effect
   });
 </script>
+
+  <!-- Portfolio Dynamic Loader -->
+  <script type="module">
+    // Try to import Firebase functions, fallback to local storage if unavailable
+    let getImagesByCategory;
+    let useFirebase = false;
+    
+    try {
+      const firebaseModule = await import('./assets/js/firebase-config.js');
+      getImagesByCategory = firebaseModule.getImagesByCategory;
+      useFirebase = true;
+    } catch (error) {
+      console.warn('Firebase not available, using local storage fallback');
+      useFirebase = false;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      loadPortfolioImages();
+    });
+
+    async function loadPortfolioImages() {
+      try {
+        var container = document.getElementById('portfolio-container');
+        
+        // Clear all existing items
+        container.innerHTML = '';
+        
+        // Show loading spinner
+        var loadingSpinner = document.createElement('div');
+        loadingSpinner.className = 'col-12 text-center py-5';
+        loadingSpinner.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Loading portfolio images...</p>';
+        container.appendChild(loadingSpinner);
+        
+        let images = [];
+        
+        if (useFirebase) {
+          try {
+            // Try Firebase first
+            const result = await getImagesByCategory('portfolio');
+            if (result.success && result.images) {
+              images = result.images;
+            }
+          } catch (firebaseError) {
+            console.warn('Firebase connection failed, falling back to local storage');
+            images = loadLocalStorageImages();
+          }
+        } else {
+          // Use local storage fallback
+          images = loadLocalStorageImages();
+        }
+        
+        // Remove loading spinner
+        container.removeChild(loadingSpinner);
+        
+        if (images.length > 0) {
+          // Add actual portfolio images
+          images.forEach(function(imageData, index) {
+            var portfolioItem = createPortfolioItem(imageData, index);
+            container.appendChild(portfolioItem);
+          });
+        } else {
+          // Show a single placeholder message when no images
+          var placeholder = document.createElement('div');
+          placeholder.className = 'col-12 text-center py-5';
+          placeholder.innerHTML = '<h4>No portfolio images uploaded yet</h4><p>Please upload images from the admin panel</p>';
+          container.appendChild(placeholder);
+        }
+        
+        // Refresh Isotope layout if available
+        if (window.portfolioIsotope) {
+          setTimeout(() => {
+            window.portfolioIsotope.layout();
+          }, 100);
+        }
+      } catch (error) {
+        console.error('Error loading portfolio images:', error);
+        var container = document.getElementById('portfolio-container');
+        container.innerHTML = '<div class="col-12 text-center py-5"><h4>Error loading portfolio images</h4><p>Please check your internet connection and try again.</p></div>';
+      }
+    }
+
+    function loadLocalStorageImages() {
+      try {
+        // Check for images in local storage
+        const localImages = JSON.parse(localStorage.getItem('portfolioImages') || '[]');
+        const googleDriveImages = JSON.parse(localStorage.getItem('googleDriveImages') || '[]');
+        
+        // Combine both local storage systems
+        let allImages = [];
+        
+        // Handle local portfolio images (base64 strings)
+        localImages.forEach((url, index) => {
+          allImages.push({
+            id: 'local_' + index,
+            name: 'Portfolio Image ' + (index + 1),
+            url: url,
+            category: 'portfolio'
+          });
+        });
+        
+        // Handle Google Drive images (objects with url property)
+        googleDriveImages.forEach((image) => {
+          if (image.category === 'portfolio' && image.url) {
+            allImages.push(image);
+          }
+        });
+        
+        return allImages;
+      } catch (error) {
+        console.error('Error loading local storage images:', error);
+        return [];
+      }
+    }
+
+    function createPortfolioItem(imageData, index) {
+      var categories = ['filter-remodeling', 'filter-construction', 'filter-repairs', 'filter-design', 'filter-electrical', 'filter-metal-works', 'filter-civil-engineering', 'filter-hvac'];
+      var titles = ['Home Remodeling', 'Construction Services', 'Repair Services', 'Design Services', 'Electrical Services', 'Metal Works', 'Civil Engineering', 'HVAC Services'];
+      var descriptions = [
+        'Complete home renovation services',
+        'Professional construction and building',
+        'Professional repair and maintenance',
+        'Creative design and planning',
+        'Expert electrical installations',
+        'Quality metal fabrication',
+        'Comprehensive civil engineering',
+        'HVAC installation and maintenance'
+      ];
+      
+      var categoryIndex = index % categories.length;
+      var category = categories[categoryIndex];
+      var title = titles[categoryIndex];
+      var description = descriptions[categoryIndex];
+      
+      var div = document.createElement('div');
+      div.className = 'col-lg-4 col-md-6 portfolio-item ' + category;
+      div.innerHTML = 
+        '<div class="portfolio-content h-100">' +
+          '<img src="' + imageData.url + '" class="img-fluid" alt="' + (imageData.name || title) + '" loading="lazy">' +
+          '<div class="portfolio-info">' +
+            '<h4>' + (imageData.name || title) + '</h4>' +
+            '<p>' + description + '</p>' +
+            '<a href="' + imageData.url + '" title="' + (imageData.name || title) + '" data-gallery="portfolio-gallery-' + (categoryIndex + 1) + '" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>' +
+            '<a href="project-details.html" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>' +
+          '</div>' +
+        '</div>';
+      return div;
+    }
+
+    // Listen for local storage changes (for backward compatibility)
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'portfolioImages' || e.key === 'googleDriveImages') {
+        loadPortfolioImages();
+      }
+    });
+
+    // Refresh portfolio images every 30 seconds to check for new uploads
+    setInterval(function() {
+      loadPortfolioImages();
+    }, 30000);
+  </script>
 
 </body>
 

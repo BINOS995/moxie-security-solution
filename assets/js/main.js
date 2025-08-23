@@ -118,24 +118,39 @@
     let sort = isotopeItem.getAttribute('data-sort') ?? 'original-order';
 
     let initIsotope;
-    imagesLoaded(isotopeItem.querySelector('.isotope-container'), function() {
-      initIsotope = new Isotope(isotopeItem.querySelector('.isotope-container'), {
+    let container = isotopeItem.querySelector('.isotope-container');
+    
+    // Initialize Isotope regardless of imagesLoaded to handle empty containers
+    function initializeIsotope() {
+      initIsotope = new Isotope(container, {
         itemSelector: '.isotope-item',
         layoutMode: layout,
         filter: filter,
         sortBy: sort
       });
-    });
+    }
+
+    // Try to initialize with imagesLoaded, but fallback to immediate initialization
+    if (container.querySelectorAll('.isotope-item').length > 0) {
+      imagesLoaded(container, function() {
+        initializeIsotope();
+      });
+    } else {
+      // Initialize immediately for empty containers
+      setTimeout(initializeIsotope, 100);
+    }
 
     isotopeItem.querySelectorAll('.isotope-filters li').forEach(function(filters) {
       filters.addEventListener('click', function() {
         isotopeItem.querySelector('.isotope-filters .filter-active').classList.remove('filter-active');
         this.classList.add('filter-active');
-        initIsotope.arrange({
-          filter: this.getAttribute('data-filter')
-        });
-        if (typeof aosInit === 'function') {
-          aosInit();
+        if (initIsotope) {
+          initIsotope.arrange({
+            filter: this.getAttribute('data-filter')
+          });
+          if (typeof aosInit === 'function') {
+            aosInit();
+          }
         }
       }, false);
     });
@@ -166,16 +181,16 @@
    */
 
   // Replace with your WhatsApp number (international format, no '+' or dashes)
-const phoneNumber = "233241197078";
+var phoneNumber = "233241197078";
 
 // Prefilled message (encoded)
-const message = encodeURIComponent("Hello, I need assistance");
+var message = encodeURIComponent("Hello, I need assistance");
 
 // Create the full WhatsApp URL
-const whatsappLink = `https://whatsapp.com/dl/`;
+var whatsappLink = "https://whatsapp.com/dl/";
 
 // Assign the link to the button if it exists
-const chatButton = document.getElementById("chat-button");
+var chatButton = document.getElementById("chat-button");
 if (chatButton) {
   chatButton.href = 'https://whatsapp.com/dl/';
 }
